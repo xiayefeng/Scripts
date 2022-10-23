@@ -379,6 +379,26 @@ FROM t_emp te RIGHT OUTER JOIN
 t_dept td ON te.deptId = td.id 
 WHERE te.deptId IS NULL;
 
+-- 2.1 基本函数
+/*
+ * ABS(x) 返回x的绝对值
+   SIGN(X) 返回X的符号。正数返回1，负数返回-1，0返回0
+   PI() 返回圆周率的值
+   CEIL(x)，CEILING(x) 返回大于或等于某个值的最小整数
+   FLOOR(x) 返回小于或等于某个值的最大整数
+   LEAST(e1,e2,e3…) 返回列表中的最小值
+   GREATEST(e1,e2,e3…) 返回列表中的最大值
+   MOD(x,y) 返回X除以Y后的余数
+   RAND() 返回0~1的随机值
+   RAND(x) 返回0~1的随机值，其中x的值用作种子值，相同的X值会产生相同的随机数
+   ROUND(x) 返回一个对x的值进行四舍五入后，最接近于X的整数
+   ROUND(x,y) 返回一个对x的值进行四舍五入后最接近X的值，并保留到小数点后面Y位
+   TRUNCATE(x,y) 返回数字x截断为y位小数的结果
+   SQRT(x) 返回x的平方根。当X的值为负数时，返回NULL
+ * 
+ * 
+ */
+
 SELECT RADIANS(30),RADIANS(60),RADIANS(90),DEGREES(2*PI()),DEGREES(RADIANS(90))
 FROM DUAL;
 
@@ -393,10 +413,36 @@ SELECT SIN(RADIANS(30)), DEGREES(ASIN(0.5)), TAN(RADIANS(45)), DEGREES(ATAN(1)) 
 #  指数和对数
 SELECT POW(2,5), POWER(2,6), EXP(1) FROM DUAL; 
 
-SELECT LN(EXP(1)), LOG10(10), LOG2(2) FROM DUAL; 
+SELECT LN(EXP(2)), LOG10(10), LOG2(2) FROM DUAL; 
+# 2.5 进制间的转换
+/* 
+BIN(x) 返回x的二进制编码
+HEX(x) 返回x的十六进制编码
+OCT(x) 返回x的八进制编码
+CONV(x,f1,f2) 返回f1进制数变成f2进制数
+*/
 
+SELECT BIN(0x16a), HEX(16), oct(14), CONV(22, 10, 8) FROM DUAL;
 
+# 字符串函数
+SELECT ASCII('ABC'), CHAR_LENGTH('hello'), CHAR_LENGTH('我们'), LENGTH('hello'), LENGTH('我梦') 
+FROM DUAL;
 
+SELECT e.last_name , CONCAT(e.last_name, ' up is ', e2.last_name) FROM 
+employees e LEFT JOIN employees e2 
+ON e.manager_id = e2.employee_id;
+
+SELECT CONCAT_WS('-', 'hello', 'world', 'how', 'are', 'you')
+FROM DUAL;
+
+SELECT INSERT ('hello', 2, 3, 'aaaa'), REPLACE ('hemmo, mm,ddd', 'mm', 'll')
+FROM DUAL;
+
+SELECT UPPER('hello'),LOWER('jjHHHkkdJ') ,LEFT ('hell0', 2), RIGHT ('hello', 2) 
+FROM DUAL;  
+
+SELECT LPAD('asdf', 5, '0') , RPAD('assd', 5, '0')
+FROM DUAL;
 
 
 
