@@ -475,10 +475,101 @@ LAST_DAY(NOW()),MAKEDATE(YEAR(NOW()),12),MAKETIME(10,21,23),PERIOD_ADD(202001010
 10)
 FROM DUAL;
 
+SELECT last_name, salary, IF(salary >= 10000, '高工资', '低工资') "details"
+FROM employees e;
 
+SELECT e.last_name , e.commission_pct , IF (e.commission_pct IS NULL , 0, e.commission_pct) "details",
+e.salary *12 * (1+ IF (e.commission_pct IS NULL , 0, e.commission_pct)) "annual_sal"
+FROM employees e ;
 
+SELECT e.last_name , e.commission_pct , IFNULL(e.commission_pct, 0)  "details",
+e.salary *12 * (1+ IFNULL(e.commission_pct, 0)) "annual_sal"
+FROM employees e ;
 
+SELECT e.last_name , e.salary , CASE WHEN e.salary >= 15000 THEN '高薪'
+                                     WHEN e.salary >= 10000 THEN '中薪'
+                                     WHEN e.salary >= 8000 THEN '底薪'
+                                     ELSE '贫民' END "details"
+FROM employees e ;
 
+SELECT e.last_name ,e.department_id, e.salary ,e.employee_id , CASE e.department_id WHEN 10 THEN salary *1.1
+                                                                                    WHEN 20 THEN salary *1.2
+                                                                                    WHEN 30 THEN salary * 1.3
+                                                                                    ELSE salary * 1.4 END "details"
+FROM employees e;
+
+SELECT e.employee_id , e.last_name ,e.department_id, e.salary , CASE e.department_id WHEN 10 THEN salary *1.1
+                                                                                    WHEN 20 THEN salary *1.2
+                                                                                    WHEN 30 THEN salary * 1.3
+                                                                                    END "details"
+FROM employees e
+WHERE e.department_id IN(10,20,30);
+
+SELECT md5('adfasfaf'), sha('adsfasfsaffff')
+FROM DUAL;
+
+SELECT VERSION(), DATABASE(),  CONNECTION_ID(), SCHEMA(), USER (), CURRENT_USER(), CHARSET('abc'),
+COLLATION ('abc')
+FROM DUAL;
+
+SELECT FORMAT(123.123, 2)
+FROM DUAL;
+
+SELECT CONV(16, 10,2), CONV(8888, 10, 16), CONV(16, 10, 8), CONV(NULL, 10, 2)
+FROM DUAL;
+
+SELECT NOW(), SYSDATE(), CURRENT_TIMESTAMP(),LOCALTIME(),LOCALTIMESTAMP()
+FROM DUAL;
+
+SELECT e.employee_id ,e.last_name ,e.salary , e.salary * 1.2 "new salary"
+FROM employees e ;
+
+SELECT last_name, CHAR_LENGTH(last_name) "length"
+FROM employees e ORDER BY LEFT(last_name, 1)  ASC;
+
+SELECT CONCAT(employee_id, last_name, salary) "OUT_PUT"
+FROM employees e ;
+
+SELECT * FROM employees e ;
+
+SELECT ROUND(DATEDIFF(CURDATE(), hire_date) / 365, 1) "years",  DATEDIFF(CURDATE(), hire_date) "days"
+FROM employees e ORDER BY  years DESC;
+
+SELECT last_name, hire_date, department_id
+FROM employees WHERE YEAR(hire_date)>= 1997 
+AND department_id IN (80, 90, 110) 
+AND commission_pct IS NOT NULL; 
+
+SELECT last_name, hire_date, department_id
+FROM employees WHERE hire_date >= '1997-01-01' 
+AND department_id IN (80, 90, 110) 
+AND commission_pct IS NOT NULL; 
+
+SELECT last_name , hire_date
+FROM employees e 
+WHERE DATEDIFF(CURDATE(), hire_date) >= 10000;
+
+SELECT CONCAT(last_name, ' earns ', salary, ' monthly but wants', salary *3) "Dream Salary"
+FROM employees e ;
+
+SELECT last_name "Last_name", job_id "Job_id", CASE  
+                           WHEN job_id = 'AD_PRES' THEN 'A'
+                           WHEN job_id = 'ST_MAN' THEN 'B'
+                           WHEN job_id = 'IT_PROG' THEN 'C'
+                           WHEN job_id = 'SA_REP' THEN 'D'
+                           WHEN job_id = 'ST_CLERK' THEN 'E' ELSE '' END "Grade"
+FROM employees e ;                          
+
+SELECT last_name "Last_name", job_id "Job_id", CASE job_id
+                           WHEN 'AD_PRES' THEN 'A'
+                           WHEN 'ST_MAN' THEN 'B'
+                           WHEN 'IT_PROG' THEN 'C'
+                           WHEN 'SA_REP' THEN 'D'
+                           WHEN 'ST_CLERK' THEN 'E' 
+                           ELSE '' END "Grade"
+FROM employees e ;   
+                           
+                           
 
 
 
