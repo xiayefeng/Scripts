@@ -569,7 +569,24 @@ SELECT last_name "Last_name", job_id "Job_id", CASE job_id
                            ELSE '' END "Grade"
 FROM employees e ;   
                            
-                           
+SELECT AVG(salary), MAX(salary),MIN(salary), SUM(salary)
+FROM employees
+WHERE job_id LIKE '%REP%';
+
+SELECT MIN(hire_date), MAX(hire_date)
+FROM employees;
+
+SELECT department_id, ROUND(AVG(salary), 2) 
+FROM employees
+GROUP BY department_id ;
+
+SELECT job_id, department_id, AVG(salary)
+FROM employees e
+GROUP BY department_id , job_id ;
+
+SELECT department_id,AVG(salary)
+FROM employees
+GROUP BY department_id WITH ROLLUP;
 
 
 
