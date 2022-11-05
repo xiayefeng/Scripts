@@ -588,6 +588,69 @@ SELECT department_id,AVG(salary)
 FROM employees
 GROUP BY department_id WITH ROLLUP;
 
+SELECT department_id, MAX(salary)
+FROM employees e 
+GROUP BY department_id 
+HAVING MAX(salary) > 10000 ;
+
+SELECT MAX(salary)
+FROM employees e ;
+
+SELECT department_id, MAX(salary)
+FROM employees e 
+WHERE department_id IN (10,20,30,40)
+GROUP BY department_id 
+HAVING MAX(salary) > 10000 ;
+
+SELECT department_id, MAX(salary)
+FROM employees e 
+GROUP BY department_id 
+HAVING MAX(salary) > 10000 AND department_id IN (10,20,30,40) ;
+
+SELECT AVG(salary), MAX(salary), MIN(salary), SUM(salary)
+FROM employees e ;
+
+SELECT job_id , MAX(salary), MIN(salary), AVG(salary),SUM(salary)
+FROM employees e 
+GROUP BY e.job_id ;
+
+SELECT job_id, COUNT(*)
+FROM employees e 
+GROUP BY job_id ;
+
+SELECT MAX(salary) - MIN(salary)
+FROM employees e ;
+
+SELECT * FROM employees e ;
+
+SELECT e.manager_id, e2.last_name , MIN(e.salary)
+FROM employees e JOIN employees e2 
+WHERE e.manager_id IS NOT NULL AND e2.employee_id = e.manager_id 
+GROUP BY e.manager_id 
+HAVING MIN(e.salary) >= 6000; 
+
+SELECT d.department_name ,d2.location_id, e.department_id , COUNT(*),  AVG(e.salary)  
+FROM employees e RIGHT JOIN departments d ON 
+e.department_id = d.department_id
+JOIN departments d2 ON e.department_id = d2.department_id 
+GROUP BY d.department_id
+ORDER BY AVG (e.salary) DESC ;
+
+SELECT d.department_id ,d.location_id , COUNT(e.employee_id) "employee_num", AVG(salary) "avg_salary" 
+FROM departments d LEFT JOIN employees e 
+ON d.department_id = e.department_id 
+GROUP BY d.department_id , d.location_id 
+ORDER BY AVG (e.salary) DESC;
+
+SELECT * FROM 
+employees e WHERE e.department_id  = 50;
+
+SELECT e.job_id, d.department_name, MIN(salary)
+FROM departments d LEFT JOIN employees e 
+ON d.department_id = e.department_id 
+GROUP BY e.job_id, d.department_id 
+
+
 
 
 
