@@ -645,10 +645,20 @@ ORDER BY AVG (e.salary) DESC;
 SELECT * FROM 
 employees e WHERE e.department_id  = 50;
 
+SELECT * FROM departments d ;
+
 SELECT e.job_id, d.department_name, MIN(salary)
 FROM departments d LEFT JOIN employees e 
 ON d.department_id = e.department_id 
-GROUP BY e.job_id, d.department_id 
+GROUP BY e.job_id, d.department_id; 
+
+SELECT salary, last_name
+FROM employees e 
+WHERE salary > (
+                SELECT salary
+                FROM employees e2 
+                WHERE e2.last_name = 'Abel'
+                );
 
 
 
