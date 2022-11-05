@@ -661,8 +661,59 @@ WHERE salary > (
                 );
 
 
+SELECT * FROM 
+employees e 
+WHERE e.salary > (
+                  SELECT salary
+                  FROM employees e2
+                  WHERE e2.employee_id = 149
+                 );
+
+SELECT employee_id, manager_id, department_id
+FROM employees e 
+WHERE manager_id = (
+SELECT manager_id FROM 
+employees e2
+WHERE e2.employee_id = 141
+)
+AND department_id = (
+SELECT department_id 
+FROM employees e3 
+WHERE e3.employee_id = 141
+)
+AND e.employee_id != 141
+
+SELECT employee_id, manager_id, department_id
+FROM employees e 
+WHERE (manager_id,department_id) = (
+SELECT manager_id , department_id 
+FROM employees e2 
+WHERE e2.employee_id = 141
+)
+AND e.employee_id != 141
+
+SELECT e.department_id, MIN(e.salary)
+FROM employees e 
+WHERE e.department_id IS NOT NULL 
+GROUP BY department_id 
+HAVING MIN(e.salary) > (
+SELECT MIN(e2.salary)
+FROM employees e2 
+WHERE e2.department_id = 50
+) 
+#  显示员工的　employee_id，last_name 和 location
+#  其中，若员工 department_id 与 location_id 为 1800 的 department_id 相同，则location 为'Canada', 其余则为'USA'
+SELECT e.employee_id ,e.last_name, CASE e.department_id WHEN (
+                                                           SELECT d.department_id 
+                                                           FROM departments d 
+                                                           WHERE d.location_id= 1800)
+                                                        THEN 'Canada'
+                                                        ELSE 'USA' END 
+ "location"
+FROM employees e 
 
 
+# 查询工资大于本部门平均工资的员工信息
 
 
 
