@@ -712,16 +712,318 @@ SELECT e.employee_id ,e.last_name, CASE e.department_id WHEN (
  "location"
 FROM employees e 
 
+SELECT employee_id, last_name, salary, department_id 
+FROM employees e 
+WHERE salary IN 
+               (SELECT MIN(salary)
+                FROM employees e2
+                GROUP BY department_id
+                );
+               
+# 题目：返回其它job_id中比job_id为‘IT_PROG’部门任一工资低的员工的员工号、姓名、job_id 以及salary  
+SELECT employee_id, last_name, job_id, salary
+FROM employees e 
+WHERE job_id <> 'IT_PROG'
+AND salary < ANY (
+                    SELECT salary
+                    FROM employees e2
+                    WHERE job_id = 'IT_PROG'
+                    );
 
+# 题目：返回其它job_id中比job_id为‘IT_PROG’部门所有工资都低的员工的员工号、姓名、job_id以及salary
+SELECT employee_id, last_name, job_id, salary
+FROM employees e 
+WHERE job_id <> 'IT_PROG'
+AND salary < ALL (
+                    SELECT salary
+                    FROM employees e2
+                    WHERE job_id = 'IT_PROG'
+                    );
+                   
+# 题目：查询平均工资最低的部门id
+                   
+SELECT department_id
+FROM employees e2 
+GROUP BY department_id 
+HAVING AVG(salary) = (SELECT MIN(avg_sal) "min_avg_sal"
+FROM (SELECT AVG(salary) "avg_sal"
+FROM employees e 
+GROUP BY department_id
+) t_dept_avg_sal); 
+
+SELECT department_id
+FROM employees e 
+GROUP BY department_id 
+HAVING AVG(salary) <= ALL (
+                           SELECT AVG(salary) "avg_sal"
+                           FROM employees e 
+                           GROUP BY department_id
+                           ); 
+
+# 空值问题
+SELECT last_name
+FROM employees
+WHERE employee_id NOT IN (
+                   SELECT manager_id
+                   FROM employees
+                   );                          
+
+SELECT last_name
+FROM employees
+WHERE employee_id NOT IN (
+                   SELECT manager_id
+                   FROM employees
+                   WHERE manager_id IS NOT NULL 
+                  );                                                    
+ 
 # 查询工资大于本部门平均工资的员工信息
+SELECT last_name, salary, department_id
+FROM employees e 
+WHERE salary > (
+               SELECT AVG(salary)
+               FROM employees e2
+               WHERE department_id = e.department_id              
+               );
+
+SELECT e.last_name ,e.salary ,e.department_id           
+FROM employees e ,(SELECT department_id, AVG(salary) "avg_sal"
+                   FROM employees e2 
+                   GROUP BY department_id) t_dept_avg_sal
+WHERE e.department_id  = t_dept_avg_sal.department_id
+AND e.salary > t_dept_avg_sal.avg_sal;
+
+#题目：查询员工的id,salary,按照department_name 排序
+SELECT employee_id, salary
+FROM employees e 
+ORDER BY (SELECT department_name
+          FROM departments d
+          WHERE e.department_id=d.department_id);
+
+# 题目：若employees表中employee_id与job_history表中employee_id相同的数目不小于2，输出这些相同id的员工的employee_id,last_name和其job_id       
+  
+SELECT employee_id, last_name, job_id
+FROM employees e 
+WHERE 2<= (SELECT COUNT(*) FROM job_history jh WHERE jh.employee_id= e.employee_id);
+
+# 题目：查询公司管理者的employee_id，last_name，job_id，department_id信息
+SELECT DISTINCT e2.employee_id, e2.last_name , e2.job_id , e2.department_id  
+FROM employees e JOIN employees e2 
+ON e.manager_id = e2.employee_id; 
+
+SELECT employee_id, last_name, job_id, department_id
+FROM employees e 
+WHERE e.employee_id in(SELECT DISTINCT manager_id FROM employees e2);
+
+SELECT employee_id, last_name, job_id, department_id
+FROM employees e 
+WHERE EXISTS (SELECT* FROM employees e2 WHERE e.employee_id=e2.manager_id);
+
+# 题目：查询departments表中，不存在于employees表中的部门的department_id和department_name
+SELECT d.department_id,d.department_name
+FROM employees e RIGHT JOIN departments d 
+ON e.department_id = d.department_id 
+WHERE e.department_id IS NULL;
+
+SELECT d.department_id , d.department_name 
+FROM departments d 
+WHERE NOT EXISTS (SELECT * FROM employees e WHERE d.department_id=e.department_id);
+
+SELECT last_name, salary
+FROM employees e WHERE 
+e.department_id IN (SELECT department_id FROM employees e2 WHERE e2.last_name = 'Zlotkey')
+AND last_name <> 'Zlotkey'
+
+SELECT last_name, employee_id, salary
+FROM employees e 
+WHERE e.salary > (SELECT AVG(salary) FROM employees e );
+
+SELECT last_name, job_id, salary
+FROM employees e 
+WHERE e.salary > ALL (SELECT salary FROM employees e2 WHERE e2.job_id='SA_MAN');
+
+SELECT employee_id, last_name,department_id
+FROM employees e 
+WHERE department_id IN (SELECT DISTINCT department_id FROM employees e2 WHERE  e2.last_name LIKE '%u%');
+
+SELECT employee_id, department_id FROM 
+employees e WHERE e.department_id IN (SELECT department_id FROM departments d WHERE d.location_id = 1700);
+
+SELECT last_name, salary FROM 
+employees e WHERE manager_id IN (SELECT employee_id FROM employees e2 WHERE e2.last_name = 'King');
+
+SELECT last_name, salary
+FROM employees e WHERE e.salary = (SELECT MIN(salary) FROM employees e2);
+
+SELECT department_id, department_name FROM 
+departments d WHERE department_id  IN (SELECT department_id
+										FROM employees e2 
+										GROUP BY department_id 
+										HAVING AVG(salary) = (SELECT MIN(avg_sal) "min_avg_sal"
+										FROM (SELECT AVG(salary) "avg_sal"
+										FROM employees e 
+										GROUP BY department_id
+ 										) t_dept_avg_sal));	
+
+SELECT department_id
+FROM employees e2 
+GROUP BY department_id 
+HAVING AVG(salary) = (
+						SELECT MIN(t_dept_avg_sal.avg_sal)
+						FROM (SELECT department_id, AVG(salary) "avg_sal"
+						FROM employees e 
+						GROUP BY department_id ) t_dept_avg_sal
+						); 
+					
+SELECT * FROM 
+departments d WHERE 
+d.department_id  = (SELECT department_id
+					FROM employees e2 
+					GROUP BY department_id 
+					HAVING AVG(salary) <= ALL (
+											SELECT  AVG(salary)
+											FROM employees e 
+											GROUP BY department_id 
+											)	
+					);
+				
+				
+SELECT d.*, t_dept_avg_sal.avg_sal "avg_salary"
+FROM  departments d ,(
+SELECT e.department_id , AVG(e.salary) "avg_sal" 
+FROM employees e 
+GROUP BY e.department_id 
+ORDER BY avg_sal ASC
+LIMIT 0,1
+) t_dept_avg_sal
+WHERE d.department_id = t_dept_avg_sal.department_id;
+
+SELECT *, (SELECT avg(salary) FROM employees e3 WHERE e3.department_id=d.department_id) "avg_salary" FROM 
+departments d WHERE 
+d.department_id  = (SELECT department_id
+					FROM employees e2 
+					GROUP BY department_id 
+					HAVING AVG(salary) <= ALL (
+											SELECT  AVG(salary)
+											FROM employees e 
+											GROUP BY department_id 
+											)	
+					);
 
 
+SELECT * FROM jobs j WHERE j.job_id = (				
+					SELECT job_id 
+					FROM employees e 
+					GROUP BY job_id 
+					HAVING  AVG(salary) >= ALL (SELECT AVG(salary)
+					FROM employees e2 
+					GROUP BY e2.job_id )
+				)
+				
+SELECT MAX(avg_sal) "max_avg_job" 				
+FROM (SELECT AVG(salary) "avg_sal"
+FROM employees e 
+GROUP BY e.job_id )	t_avg_job_sal	
+
+SELECT * FROM jobs j WHERE j.job_id = (				
+					SELECT job_id 
+					FROM employees e 
+					GROUP BY job_id 
+					HAVING  AVG(salary) = (
+					                        SELECT MAX(avg_sal) "max_avg_job" 				
+											FROM (SELECT AVG(salary) "avg_sal"
+											FROM employees e 
+											GROUP BY e.job_id )	t_avg_job_sal)
+				);
+
+SELECT * FROM jobs j WHERE j.job_id = (				
+					SELECT job_id 
+					FROM employees e 
+					GROUP BY job_id 
+					HAVING  AVG(salary) = (SELECT AVG(salary) "avg_sal"
+					FROM employees e2 
+					GROUP BY e2.job_id
+					ORDER BY avg_sal DESC 
+					LIMIT 0,1
+					)
+				)	
+
+SELECT j.*
+FROM jobs j ,(SELECT job_id , AVG(salary) "avg_sal"
+					FROM employees e2 
+					GROUP BY e2.job_id
+					ORDER BY avg_sal DESC 
+					LIMIT 0,1	) job_avg_sal	
+WHERE j.job_id = job_avg_sal.job_id					
 
 
+SELECT DISTINCT e2.manager_id, e3.last_name , e3.department_id, e3.email, e3.salary FROM 
+employees e2 JOIN employees e3 
+ON e2.manager_id = e3.employee_id
+WHERE
+e2.manager_id IS NOT NULL
+AND e2.department_id  = (
+					SELECT department_id
+					FROM employees e2 
+					GROUP BY department_id 
+					HAVING AVG(salary) = (
+											SELECT MAX(avg_sal) 	
+											FROM (SELECT AVG(salary) "avg_sal"
+											FROM employees e 
+											GROUP BY department_id ) t_dept_avg_sal
+											)
+					);
+		
+SELECT last_name , department_id ,email , salary 
+FROM employees e3 
+WHERE e3.employee_id IN (
+						SELECT manager_id 
+						FROM employees e2 ,(
+											SELECT department_id, AVG(salary) avg_sal
+											FROM employees e 
+											GROUP BY department_id 
+											ORDER BY avg_sal DESC 
+											LIMIT 0,1) t_dept_avg_sal 
+						WHERE e2.department_id = t_dept_avg_sal.department_id
+						);
 
+SELECT department_id FROM 
+departments d  WHERE d.department_id <> (
+										SELECT DISTINCT department_id 
+										FROM employees e
+										WHERE job_id = 'ST_CLERK'
+										)
 
+SELECT department_id FROM 
+departments d  WHERE NOT EXISTS  (
+									SELECT  * 
+									FROM employees e
+									WHERE job_id = 'ST_CLERK'
+									AND e.department_id = d.department_id 
+								);
+									
+SELECT last_name
+FROM employees e 
+WHERE NOT EXISTS (
+				SELECT * FROM 
+				employees e2 
+				WHERE e.manager_id = e2.employee_id 
+				)
 
+SELECT e.employee_id,e.last_name,e.hire_date, e.salary
+FROM employees e 
+WHERE EXISTS (
+ SELECT * FROM employees e2 
+ WHERE e.manager_id  = e2.employee_id 
+ AND e2.last_name = 'DE Haan'
+)
 
+SELECT department_name FROM 
+departments d 
+WHERE 5 < (
+  SELECT COUNT(*)
+  FROM employees e
+  WHERE e.department_id  = d.department_id 
+)
 
 
 
