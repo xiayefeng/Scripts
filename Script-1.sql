@@ -1025,7 +1025,9 @@ WHERE 5 < (
   WHERE e.department_id  = d.department_id 
 )
 
-
+SELECT l.country_id 
+FROM locations l 
+WHERE 2 < (SELECT COUNT(*) FROM departments d WHERE d.location_id = l.location_id)
 
 
 
