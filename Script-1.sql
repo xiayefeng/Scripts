@@ -1029,6 +1029,156 @@ SELECT l.country_id
 FROM locations l 
 WHERE 2 < (SELECT COUNT(*) FROM departments d WHERE d.location_id = l.location_id)
 
+DESC employees ;
+
+SHOW CREATE TABLE employees ;
+
+
+CREATE TABLE `employees` (
+  `employee_id` int NOT NULL DEFAULT '0',
+  `first_name` varchar(20) DEFAULT NULL,
+  `last_name` varchar(25) NOT NULL,
+  `email` varchar(25) NOT NULL,
+  `phone_number` varchar(20) DEFAULT NULL,
+  `hire_date` date NOT NULL,
+  `job_id` varchar(10) NOT NULL,
+  `salary` double(8,2) DEFAULT NULL,
+  `commission_pct` double(2,2) DEFAULT NULL,
+  `manager_id` int DEFAULT NULL,
+  `department_id` int DEFAULT NULL,
+  PRIMARY KEY (`employee_id`),
+  UNIQUE KEY `emp_email_uk` (`email`),
+  UNIQUE KEY `emp_emp_id_pk` (`employee_id`),
+  KEY `emp_dept_fk` (`department_id`),
+  KEY `emp_job_fk` (`job_id`),
+  KEY `emp_manager_fk` (`manager_id`),
+  CONSTRAINT `emp_dept_fk` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`),
+  CONSTRAINT `emp_job_fk` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`job_id`),
+  CONSTRAINT `emp_manager_fk` FOREIGN KEY (`manager_id`) REFERENCES `employees` (`employee_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+
+CREATE DATABASE test1;
+
+CREATE DATABASE test2 CHARACTER SET 'utf8mb4';
+
+SHOW CREATE DATABASE test1;
+
+SHOW CREATE DATABASE test2;
+
+CREATE DATABASE `test1` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */
+CREATE DATABASE `test2` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */
+
+SELECT DATABASE() FROM DUAL; 
+
+SHOW TABLES FROM mysql;
+
+SHOW tables;
+
+SHOW CREATE DATABASE test1;
+
+ALTER DATABASE test1 CHARACTER SET 'utf8'
+
+DROP DATABASE IF EXISTS test2;
+
+DROP DATABASE test1;
+
+SHOW DATABASES;
+
+SELECT DATABASE() FROM DUAL; 
+
+CREATE TABLE IF NOT EXISTS myemp3(
+id int,
+emp_name varchar(15),
+hire_data date
+);
+
+DESC myemp1 ;
+
+CREATE TABLE myemp2 AS SELECT employee_id, last_name, salary FROM employees e ;
+
+SELECT
+    *
+FROM
+    myemp2;
+
+CREATE TABLE employees_blank 
+AS
+SELECT
+    *
+FROM
+    employees e
+WHERE
+    1 = 2;
+
+SELECT * FROM employees_blank;
+
+ALTER TABLE myemp1 
+ADD salary double(10,
+2);
+
+DESC myemp1 ;
+
+ALTER TABLE myemp1 
+ADD phone_number varchar(20) FIRST;
+
+ALTER TABLE myemp1 
+ADD email varchar(50) AFTER emp_name;
+
+ALTER TABLE myemp1 
+MODIFY emp_name varchar(25) default '';
+
+ALTER table myemp1 
+change salary monthly_salary double(10,2);
+
+ALTER TABLE myemp1 
+CHANGE email my_email varchar(48);
+
+ALTER TABLE myemp1 
+DROP COLUMN my_email;
+
+RENAME TABLE myemp1 
+TO myemp11;
+
+ALTER TABLE myemp11 
+RENAME TO myemp1;
+
+DROP TABLE IF EXISTS myemp3;
+
+CREATE TABLE myemp1
+AS
+SELECT
+    *
+FROM
+    employees e ;
+
+SELECT * FROM myemp1;
+
+TRUNCATE table myemp1; 
+DELETE FROM myemp1 ;
+
+
+DELETE FROM myemp1 
+WHERE employee_id = 198;
+
+SELECT * FROM myemp3 m ;
+
+COMMIT;
+SET
+autocommit = FALSE ;
+
+DELETE FROM myemp2 ;
+
+ROLLBACK;
+
+
+
+
+
+
+
+
+
+
 
 
 
