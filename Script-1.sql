@@ -2638,6 +2638,49 @@ DESC customers_info;
 ALTER TABLE customers_info
 DROP COLUMN c_city;
 
+CREATE DATABASE IF NOT EXISTS test03_company;
+USE test03_company;
+
+CREATE TABLE IF NOT EXISTS offices(
+office_code int,
+city varchar(30),
+address varchar(50),
+country varchar(50),
+postal_code varchar(25)
+);
+
+CREATE TABLE IF NOT EXISTS employees(
+empNum int,
+last_name varchar(50),
+first_name varchar(50),
+mobile varchar(25),
+code int,
+job_title varchar(50),
+birth date,
+note varchar(255),
+sex varchar(5)
+);
+
+SHOW tables;
+DESC employees;
+
+ALTER TABLE employees
+MODIFY mobile varchar(25) AFTER code;
+
+ALTER TABLE employees
+CHANGE birth birthday date;
+
+ALTER TABLE employees
+MODIFY sex char(1);
+
+ALTER TABLE employees
+DROP COLUMN note;
+
+ALTER TABLE employees
+ADD COLUMN favoriate_activity varchar(100);
+
+RENAME TABLE employees TO employees_info;
+
 
 
 
