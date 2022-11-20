@@ -2799,7 +2799,10 @@ VALUES (3,
 28)
 ;
 
+SELECT
+    DATABASE();
 
+SHOW DATABASES;
 
 UPDATE
     books
@@ -2871,21 +2874,374 @@ HAVING note_num > 30;
 SELECT * from books
 limit 5,5;
 
+
+
 SELECT
-    MAX(store_num.note_num)
-FROM
-    (
-    SELECT
         note,
         sum(num) "note_num"
+FROM
+        books
+GROUP BY
+        note
+ORDER BY
+    note_num DESC
+LIMIT 0,
+1
+
+SELECT
+    *
+FROM
+    books;
+
+
+SELECT
+     name
+FROM
+    books
+WHERE
+    CHAR_LENGTH(REPLACE(name, ' ', ''))>= 10;
+
+SELECT
+    name,
+    note
+FROM
+    books;
+
+SELECT
+    name "书名",
+    note,
+    CASE
+        note WHEN 'novel' THEN '小说'
+        WHEN 'law' THEN '法律'
+        WHEN 'medicine' THEN '医药'
+        WHEN 'cartoon' THEN '卡通'
+        WHEN 'joke' THEN '笑话'
+        ELSE note
+    END "分类"
+FROM
+    books;
+
+SELECT
+    name "书名",
+    num "库存",
+    CASE
+        WHEN num > 30 THEN '滞销'
+        WHEN num > 0
+        AND num < 10 THEN '畅销'
+        WHEN num = 0 THEN '需要无货'
+        ELSE '一般'
+    END "状况"
+FROM
+    books;
+
+SELECT
+    IFNULL(note, '合计库存总数') "note" ,
+    sum(num)
+FROM
+    books
+GROUP BY
+    note
+WITH ROLLUP;
+
+SELECT
+    IFNULL(note, '合计总数') "note" ,
+    COUNT(*) 
+FROM
+    books
+GROUP BY
+    note
+WITH ROLLUP;
+
+SELECT
+    *
+FROM
+    books
+ORDER BY
+    num DESC
+LIMIT 0,
+3
+
+SELECT
+    *
+FROM
+    books
+WHERE
+    pubdate = (
+    SELECT
+        MIN(pubdate)
     FROM
         books
-    GROUP BY
-        note) store_num;
+);
 
+SELECT
+    *
+FROM
+    books
+WHERE
+    note = 'novel'
+ORDER BY
+    price DESC
+LIMIT 0,
+1;
 
+SELECT
+    *
+FROM
+    books
+ORDER BY
+    CHAR_LENGTH(REPLACE(name, ' ', '')) DESC
+LIMIT 0,
+1;
 
+CREATE DATABASE IF NOT EXISTS dbtest11 CHARACTER SET 'utf8';
 
+USE dbtest11;
+
+CREATE TABLE my_employees(
+id INT(10),
+first_name VARCHAR(10),
+last_name VARCHAR(10),
+userid VARCHAR(10),
+salary DOUBLE(10,2)
+);
+
+CREATE TABLE users(
+id INT,
+userid VARCHAR(10),
+department_id INT
+);
+
+DESC my_employees;
+INSERT
+    INTO
+    my_employees (id,
+    first_name,
+    last_name,
+    userid,
+    salary)
+VALUES (
+1,
+'patel',
+'Ralph',
+'Rpatel',
+895),
+(2,
+'Dancs',
+'Bttty',
+'Badacs',
+860),
+(3,
+'Biri',
+'Ben',
+'Bbiri',
+1100),
+(4,
+'Newman',
+'Chad',
+'Cnewman',
+750),
+(5,
+'Ropeburn',
+'Audrey',
+'Aropebur',
+1550);
+
+DESC users ;
+INSERT
+    INTO
+    users (id,
+    userid,
+    department_id)
+VALUES 
+(1,
+'Rpatel',
+10),
+(2,
+'Bdancs',
+10),
+(3,
+'Bbiri',
+20),
+(4,
+'Cnewman',
+30),
+(5,
+'Aropebur',
+40);
+
+UPDATE my_employees 
+set last_name = 'drelxer'
+WHERE id = 3;
+
+UPDATE
+    my_employees
+SET
+    salary = 1000
+WHERE
+    salary < 900;
+
+SELECT * FROM my_employees me ;
+SELECT * FROM users u ;
+
+DELETE FROM my_employees 
+WHERE userid = 'Bbiri'
+
+DELETE FROM users  
+WHERE userid = 'Bbiri'
+
+# 清空表
+TRUNCATE TABLE my_employees ;
+
+SELECT DATABASE(); 
+USE dbtest11;
+
+CREATE TABLE IF NOT EXISTS pet(
+name varchar(20),
+owner varchar(20),
+species varchar(20),
+sex char(1),
+birth YEAR,
+death YEAR
+)
+
+INSERT
+    INTO
+    pet (name,
+    owner,
+    species,
+    sex,
+    birth,
+    death)
+VALUES ('Fluffy',
+'harold',
+'Cat',
+'f',
+2003,
+2010),
+('Claws',
+'gwen',
+'Cat',
+'m',
+2004,
+NULL),
+('Buffy',
+'',
+'Dog',
+'f',
+2009,
+NULL),
+('Fang',
+'benny',
+'Dog',
+'m',
+2000,
+NULL),
+('bowser',
+'diane',
+'Dog',
+'m',
+2003,
+2009),
+('Chirpy',
+'',
+'Bird',
+'f',
+2008,
+NULL);
+
+SELECT * FROM pet;
+
+ALTER TABLE pet 
+ADD owner_birth date;
+UPDATE
+    pet
+SET
+    owner = 'kevin'
+WHERE
+    name = 'Claws'
+    
+UPDATE
+    pet
+SET
+    owner = 'duck'
+WHERE
+    death IS NULL
+    AND species = 'Dog'
+    
+SELECT
+    name
+FROM
+    pet
+WHERE
+    owner = ''
+    OR owner IS NULL ;
+
+SELECT
+    *
+FROM
+    pet
+WHERE
+    species = 'Cat'
+    AND death IS NOT NULL;
+
+DELETE
+FROM
+    pet
+WHERE
+    species = 'Dog'
+    AND death IS NOT NULL;
+
+DESC pet;
+
+SELECT * FROM pet;
+
+CREATE table if not exists employee (
+id int,
+name varchar(20),
+sex char(1),
+tel varchar(20),
+addr varchar(50),
+salary double(8, 2)
+)
+
+desc employee;
+
+INSERT into employee (id,name, sex, tel, addr, salary)
+values 
+(10001, '张一一', '男', '13456789000', '山东青岛', 1001.58),
+(10002, '刘小红', '女', '13454319000', '河北保定', 1201.21),
+(10003, '李四', '男', '0751-1234567', '广东佛山', 1004.11),
+(10004, '刘小强', '男', '0755-5555555', '广东深圳', 1501.23),
+(10005, '王艳', '女', '020-1232133', '广东广州', 1405.16);
+
+SELECT
+    *
+FROM
+    employee;
+
+SELECT
+    *
+FROM
+    employee
+WHERE
+    salary >= 1200
+    AND salary <= 1300;
+SELECT * FROM employee 
+where name like '刘%';
+
+UPDATE
+    employee
+SET
+    addr = '广东韶关'
+WHERE
+    name = '李四'
+    
+SELECT
+    *
+FROM
+    employee
+WHERE
+    name LIKE '%小%';
 
 
 
