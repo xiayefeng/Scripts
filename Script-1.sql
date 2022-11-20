@@ -2681,9 +2681,207 @@ ADD COLUMN favoriate_activity varchar(100);
 
 RENAME TABLE employees TO employees_info;
 
+CREATE DATABASE IF NOT EXISTS test01_library;
+
+USE test01_library;
+
+SHOW tables;
+
+CREATE TABLE IF NOT EXISTS test1(
+a int,
+b int,
+c int GENERATED ALWAYS AS (a + b) VIRTUAL
+)
+
+INSERT
+    INTO
+    test1 (a,
+    b)
+VALUES (10,
+20);
+
+UPDATE test1
+set a = 100;
+
+SELECT
+    *
+FROM
+    test1;
+
+CREATE TABLE IF NOT EXISTS books(
+id int,
+name varchar(50),
+authors varchar(100),
+price float,
+pubdaate YEAR,
+note varchar(100),
+num int
+)
+
+
+INSERT
+    INTO
+    books
+VALUES (1,
+'TalofAAA',
+'Dickes',
+23,
+'1995',
+'novel',
+11);
+
+INSERT
+    INTO
+    books (id, name, authors, price, pubdate, note, num)
+VALUES (2,
+'EmmaT',
+'Jane lura',
+35,
+'1993',
+'joke',
+22);
+
+INSERT
+    INTO
+    books (id, name, authors, price, pubdate, note, num)
+VALUES (3,
+'Story of Jane',
+'Jane Tim',
+40,
+'2001',
+'novel',
+0),
+(5,
+'Old land',
+'Honore Blade',
+30,
+'2010',
+'law',
+0);
+
+INSERT
+    INTO
+    books
+VALUES (3,
+'Story of Jane',
+'Jane Tim',
+40,
+'2001',
+'novel',
+0),
+(4,
+'Lovey Day',
+'George Byron',
+20,
+'2005',
+'novel',
+30),
+(5,
+'Old land',
+'Honore Blade',
+30,
+'2010',
+'law',
+0),
+(6,
+'The battle',
+'Upton Sara',
+30,
+'1999',
+'medicine',
+40),
+(7,
+'Rose Hood',
+'Richard haggard',
+28,
+'2008',
+'cartoon',
+28)
+;
 
 
 
+UPDATE
+    books
+SET
+    price = price + 5
+WHERE
+    note = 'novel'
+
+UPDATE
+    books
+SET
+    price = 40,
+    note = 'drama'
+WHERE
+    name = 'EmmaT'
+    
+DELETE
+FROM
+    books
+WHERE
+    num = 0;
+
+SELECT
+    *
+FROM
+    books
+WHERE
+    name LIKE '%a%' ;
+
+SELECT
+    count(*) "book number",
+    sum(num) "total"
+FROM
+    books
+WHERE
+    name LIKE '%a%';
+
+SELECT * FROM books;
+
+SELECT * from books
+WHERE note = 'novel'
+ORDER BY price DESC ;
+
+SELECT
+    *
+FROM
+    books
+ORDER BY
+    num DESC ,
+    note ;
+
+SELECT
+    note,
+    COUNT(*)
+FROM
+    books
+GROUP BY
+    note;
+
+SELECT
+    note,
+    sum(num) "note_num"
+FROM
+    books
+GROUP BY
+    note
+HAVING note_num > 30;   
+
+SELECT * from books
+limit 5,5;
+
+SELECT
+    MAX(store_num.note_num)
+FROM
+    (
+    SELECT
+        note,
+        sum(num) "note_num"
+    FROM
+        books
+    GROUP BY
+        note) store_num;
 
 
 
