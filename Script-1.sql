@@ -2603,7 +2603,6 @@ DESC emp01 ;
 ALTER TABLE emp01 
 DROP COLUMN test_colunm;
 
-
 CREATE DATABASE IF NOT EXISTS test02_market;
 
 USE test02_market;
@@ -2635,10 +2634,12 @@ RENAME TABLE customers TO customers_info;
 SHOW tables;
 
 DESC customers_info;
+
 ALTER TABLE customers_info
 DROP COLUMN c_city;
 
 CREATE DATABASE IF NOT EXISTS test03_company;
+
 USE test03_company;
 
 CREATE TABLE IF NOT EXISTS offices(
@@ -2662,6 +2663,7 @@ sex varchar(5)
 );
 
 SHOW tables;
+
 DESC employees;
 
 ALTER TABLE employees
@@ -2700,8 +2702,10 @@ INSERT
 VALUES (10,
 20);
 
-UPDATE test1
-set a = 100;
+UPDATE
+    test1
+SET
+    a = 100;
 
 SELECT
     *
@@ -2732,7 +2736,13 @@ VALUES (1,
 
 INSERT
     INTO
-    books (id, name, authors, price, pubdate, note, num)
+    books (id,
+    name,
+    authors,
+    price,
+    pubdate,
+    note,
+    num)
 VALUES (2,
 'EmmaT',
 'Jane lura',
@@ -2743,7 +2753,13 @@ VALUES (2,
 
 INSERT
     INTO
-    books (id, name, authors, price, pubdate, note, num)
+    books (id,
+    name,
+    authors,
+    price,
+    pubdate,
+    note,
+    num)
 VALUES (3,
 'Story of Jane',
 'Jane Tim',
@@ -2840,11 +2856,19 @@ FROM
 WHERE
     name LIKE '%a%';
 
-SELECT * FROM books;
+SELECT
+    *
+FROM
+    books;
 
-SELECT * from books
-WHERE note = 'novel'
-ORDER BY price DESC ;
+SELECT
+    *
+FROM
+    books
+WHERE
+    note = 'novel'
+ORDER BY
+    price DESC ;
 
 SELECT
     *
@@ -2869,12 +2893,15 @@ FROM
     books
 GROUP BY
     note
-HAVING note_num > 30;   
+HAVING
+    note_num > 30;
 
-SELECT * from books
-limit 5,5;
-
-
+SELECT
+    *
+FROM
+    books
+LIMIT 5,
+5;
 
 SELECT
         note,
@@ -2892,7 +2919,6 @@ SELECT
     *
 FROM
     books;
-
 
 SELECT
      name
@@ -2945,7 +2971,7 @@ WITH ROLLUP;
 
 SELECT
     IFNULL(note, '合计总数') "note" ,
-    COUNT(*) 
+    COUNT(*)
 FROM
     books
 GROUP BY
@@ -2993,7 +3019,8 @@ ORDER BY
 LIMIT 0,
 1;
 
-CREATE DATABASE IF NOT EXISTS dbtest11 CHARACTER SET 'utf8';
+CREATE DATABASE IF NOT EXISTS dbtest11 CHARACTER SET
+'utf8';
 
 USE dbtest11;
 
@@ -3002,7 +3029,8 @@ id INT(10),
 first_name VARCHAR(10),
 last_name VARCHAR(10),
 userid VARCHAR(10),
-salary DOUBLE(10,2)
+salary DOUBLE(10,
+2)
 );
 
 CREATE TABLE users(
@@ -3012,6 +3040,7 @@ department_id INT
 );
 
 DESC my_employees;
+
 INSERT
     INTO
     my_employees (id,
@@ -3047,6 +3076,7 @@ VALUES (
 1550);
 
 DESC users ;
+
 INSERT
     INTO
     users (id,
@@ -3069,9 +3099,12 @@ VALUES
 'Aropebur',
 40);
 
-UPDATE my_employees 
-set last_name = 'drelxer'
-WHERE id = 3;
+UPDATE
+    my_employees
+SET
+    last_name = 'drelxer'
+WHERE
+    id = 3;
 
 UPDATE
     my_employees
@@ -3080,19 +3113,33 @@ SET
 WHERE
     salary < 900;
 
-SELECT * FROM my_employees me ;
-SELECT * FROM users u ;
+SELECT
+    *
+FROM
+    my_employees me ;
 
-DELETE FROM my_employees 
-WHERE userid = 'Bbiri'
+SELECT
+    *
+FROM
+    users u ;
 
-DELETE FROM users  
-WHERE userid = 'Bbiri'
+DELETE
+FROM
+    my_employees
+WHERE
+    userid = 'Bbiri'
 
-# 清空表
-TRUNCATE TABLE my_employees ;
+DELETE
+FROM
+    users
+WHERE
+    userid = 'Bbiri'
+    # 清空表
+    TRUNCATE TABLE my_employees ;
 
-SELECT DATABASE(); 
+SELECT
+    DATABASE();
+
 USE dbtest11;
 
 CREATE TABLE IF NOT EXISTS pet(
@@ -3149,10 +3196,14 @@ NULL),
 2008,
 NULL);
 
-SELECT * FROM pet;
+SELECT
+    *
+FROM
+    pet;
 
 ALTER TABLE pet 
 ADD owner_birth date;
+
 UPDATE
     pet
 SET
@@ -3193,26 +3244,62 @@ WHERE
 
 DESC pet;
 
-SELECT * FROM pet;
+SELECT
+    *
+FROM
+    pet;
 
-CREATE table if not exists employee (
+CREATE TABLE IF NOT EXISTS employee (
 id int,
 name varchar(20),
 sex char(1),
 tel varchar(20),
 addr varchar(50),
-salary double(8, 2)
+salary double(8,
+2)
 )
 
-desc employee;
+DESC employee;
 
-INSERT into employee (id,name, sex, tel, addr, salary)
-values 
-(10001, '张一一', '男', '13456789000', '山东青岛', 1001.58),
-(10002, '刘小红', '女', '13454319000', '河北保定', 1201.21),
-(10003, '李四', '男', '0751-1234567', '广东佛山', 1004.11),
-(10004, '刘小强', '男', '0755-5555555', '广东深圳', 1501.23),
-(10005, '王艳', '女', '020-1232133', '广东广州', 1405.16);
+INSERT
+    INTO
+    employee (id,
+    name,
+    sex,
+    tel,
+    addr,
+    salary)
+VALUES 
+(10001,
+'张一一',
+'男',
+'13456789000',
+'山东青岛',
+1001.58),
+(10002,
+'刘小红',
+'女',
+'13454319000',
+'河北保定',
+1201.21),
+(10003,
+'李四',
+'男',
+'0751-1234567',
+'广东佛山',
+1004.11),
+(10004,
+'刘小强',
+'男',
+'0755-5555555',
+'广东深圳',
+1501.23),
+(10005,
+'王艳',
+'女',
+'020-1232133',
+'广东广州',
+1405.16);
 
 SELECT
     *
@@ -3226,8 +3313,13 @@ FROM
 WHERE
     salary >= 1200
     AND salary <= 1300;
-SELECT * FROM employee 
-where name like '刘%';
+
+SELECT
+    *
+FROM
+    employee
+WHERE
+    name LIKE '刘%';
 
 UPDATE
     employee
@@ -3243,19 +3335,23 @@ FROM
 WHERE
     name LIKE '%小%';
 
+SHOW variables LIKE 'character_%';
 
+SELECT DATABASE();
 
+CREATE TABLE test_int1(
+f1 TINYINT,
+f2 SMALLINT,
+f3 MEDIUMINT,
+f4 integer,
+f5 bigint
+)
+DESC test_int1;
 
+INSERT INTO test_int1 (f1)
+VALUES (12),(-12),(-128),(127);
 
-
-
-
-
-
-
-
-
-
+SELECT * FROM test_int1;
 
 
 
