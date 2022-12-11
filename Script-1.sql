@@ -3353,8 +3353,165 @@ VALUES (12),(-12),(-128),(127);
 
 SELECT * FROM test_int1;
 
+CREATE TABLE test_decimal1(
+f1 decimal,
+f2 decimal(5,2)
+)
+DESC test_decimal1;
 
+INSERT INTO test_decimal1 (f1, f2)
+VALUES (123.123, 123.456);
 
+INSERT INTO test_decimal1(f2)
+values(1234.34)
 
+SELECT * FROM test_decimal1 ;
 
+ALTER TABLE test_decimal1 MODIFY f1 decimal(5,2);
 
+CREATE TABLE test_bit1(
+f1 bit,
+f2 bit(5),
+f3 bit(64)
+);
+
+INSERT INTO test_bit1(f1)
+values(1);
+
+INSERT INTO test_bit1(f1)
+values(2);
+
+INSERT INTO test_bit1(f2)
+VALUES(23);
+
+SELECT * FROM test_bit1;
+
+SELECT bin(f2), hex(f2) FROM test_bit1;
+
+SELECT f2 + 0 FROM test_bit1;
+
+CREATE TABLE test_datetime1(dt datetime);
+
+INSERT INTO test_datetime1 VALUES
+('2021-01-01 06:50:30')
+
+INSERT INTO test_datetime1 VALUES
+(current_timestamp()),(now());
+
+SELECT * FROM test_datetime1 ;
+
+CREATE TABLE test_timestamp1(ts timestamp);
+
+INSERT INTO test_timestamp1
+VALUES ('1999-01-01 03:04:50'), ('19990101030405'), ('99-01-01 03:04:05'),
+('990101030405');
+
+INSERT INTO test_timestamp1
+VALUES ('2020@01@01@00@00@00'), ('20@01@01@00@00@00');
+
+INSERT INTO test_timestamp1
+VALUES (CURRENT_TIMESTAMP()), (NOW());
+
+#Incorrect datetime value
+INSERT INTO test_timestamp1
+VALUES ('2038-01-20 03:14:07');
+
+SELECT * FROM test_timestamp1 ;
+
+CREATE TABLE temp_time(
+d1 DATETIME,
+d2 TIMESTAMP
+);
+
+INSERT INTO temp_time VALUES('2021-9-2 14:45:52','2021-9-2 14:45:52');
+
+INSERT INTO temp_time VALUES(NOW(),NOW());
+
+SELECT * FROM temp_time;
+
+SET time_zone = '+8:00';
+
+SELECT UNIX_TIMESTAMP();
+
+CREATE TABLE test_enum(
+season ENUM('春','夏','秋','冬','unknow')
+);
+
+INSERT INTO test_enum
+VALUES('春'),('秋');
+
+# 忽略大小写
+INSERT INTO test_enum
+VALUES('UNKNOW');
+
+# 允许按照角标的方式获取指定索引位置的枚举值
+INSERT INTO test_enum
+VALUES('1'),(3);
+
+SELECT * FROM test_enum;
+
+INSERT INTO test_enum
+VALUES('ab');
+
+CREATE TABLE test_set(
+s SET ('A', 'B', 'C')
+);
+
+INSERT INTO test_set (s) VALUES ('A'), ('A,B');
+
+#插入重复的SET类型成员时，MySQL会自动删除重复的成员
+INSERT INTO test_set (s) VALUES ('A,B,C,A');
+
+#向SET类型的字段插入SET成员中不存在的值时，MySQL会抛出错误。
+INSERT INTO test_set (s) VALUES ('A,B,C,D');
+
+SELECT *
+FROM test_set;
+
+CREATE TABLE temp_mul(
+gender ENUM('男','女'),
+hobby SET('吃饭','睡觉','打豆豆','写代码')
+);
+
+INSERT INTO temp_mul VALUES('男','睡觉,打豆豆'); #成功
+
+# Data truncated for column 'gender' at row 1
+INSERT INTO temp_mul VALUES('男,女','睡觉,写代码'); #失败
+
+# Data truncated for column 'gender' at row 1
+INSERT INTO temp_mul VALUES('妖','睡觉,写代码');#失败
+
+INSERT INTO temp_mul VALUES('男','睡觉,写代码,吃饭'); #成功
+
+SELECT * FROM temp_mul;
+
+CREATE TABLE test_binary1(
+f1 BINARY,
+f2 BINARY(3),
+# f3 VARBINARY,
+f4 VARBINARY(10)
+);
+
+INSERT INTO test_binary1(f1,f2)
+VALUES('a','a');
+
+INSERT INTO test_binary1(f1,f2)
+VALUES('尚','尚');#失败
+
+INSERT INTO test_binary1(f2,f4)
+VALUES('ab','ab');
+
+SELECT * FROM test_binary1;
+
+CREATE TABLE test_json(
+js json
+);
+
+INSERT INTO test_json (js)
+VALUES ('{"name":"songhk", "age":18, "address":{"province":"beijing",
+"city":"beijing"}}');
+
+SELECT * FROM test_json ;
+
+SELECT js -> '$.name' AS NAME,js -> '$.age' AS age ,js -> '$.address.province'
+AS province, js -> '$.address.city' AS city FROM test_json;
