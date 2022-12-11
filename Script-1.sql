@@ -3515,3 +3515,8 @@ SELECT * FROM test_json ;
 
 SELECT js -> '$.name' AS NAME,js -> '$.age' AS age ,js -> '$.address.province'
 AS province, js -> '$.address.city' AS city FROM test_json;
+
+SHOW DATABASES;
+
+SELECT * FROM atguigudb.table_constraints
+WHERE table_name = 'employees';
