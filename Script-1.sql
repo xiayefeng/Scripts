@@ -3518,5 +3518,326 @@ AS province, js -> '$.address.city' AS city FROM test_json;
 
 SHOW DATABASES;
 
-SELECT * FROM atguigudb.table_constraints
-WHERE table_name = 'employees';
+# 查看表中的约束
+SELECT * FROM information_schema.table_constraints
+WHERE table_name = 'employees'
+
+CREATE DATABASE dbtest13;
+USE dbtest13;
+
+CREATE TABLE test1(
+id int NOT NULL,
+last_name varchar(15) NOT NULL,
+email varchar(25),
+salary decimal(10,2)
+)
+
+DESC test1;
+
+INSERT INTO test1(id, last_name, email, salary)
+values(1, 'Tom', 'tom@126.com', 3600);
+
+SELECT * FROM test1;
+
+CREATE TABLE test2(
+id int,
+last_name varchar(15),
+email varchar(25),
+salary decimal(10,2),
+
+CONSTRAINT uk_test2_email unique(email)
+)
+
+DESC test2;
+
+ALTER TABLE test2
+MODIFY id int UNIQUE;
+
+show index FROM test2;
+
+ALTER TABLE test2
+ADD CONSTRAINT uk_test2_last_name unique(last_name);
+
+ALTER TABLE test2
+DROP INDEX uk_test2_last_name;
+
+CREATE TABLE test3(
+id int PRIMARY KEY ,
+last_name varchar(15),
+email varchar(25),
+salary decimal(10,2)
+)
+
+DESC test3;
+
+CREATE TABLE test4(
+id int,
+last_name varchar(15),
+email varchar(25) UNIQUE,
+salary decimal(10,2),
+CONSTRAINT pk_test4_id PRIMARY KEY(id)
+)
+DESC test4;
+
+SELECT * FROM information_schema.table_constraints
+WHERE table_name = 'test4'
+
+show index FROM test4;
+
+CREATE TABLE test5(
+id int PRIMARY KEY AUTO_INCREMENT,
+last_name varchar(20)
+)
+DESC test5;
+
+INSERT INTO test5(last_name)
+VALUES ('Tom2')
+
+SELECT * FROM test5;
+
+CREATE TABLE dept1(
+dept_id int PRIMARY KEY,
+dept_name varchar(15)
+)
+
+CREATE TABLE emp1(
+emp_id int PRIMARY KEY AUTO_INCREMENT,
+emp_name varchar(15),
+department_id int,
+CONSTRAINT fk_emp1_dept_id FOREIGN KEY (department_id) REFERENCES dept1(dept_id)
+);
+
+DESC dept1;
+
+DESC emp1;
+
+INSERT INTO dept1 (dept_id, dept_name)
+VALUES (10, '生产部'),(20,'制造部')
+
+INSERT INTO emp1
+values(1001, 'Tom', 10)
+
+SELECT * FROM dept1;
+SELECT * FROM emp1 e;
+
+CREATE DATABASE test04_emp;
+USE test04_emp;
+
+SELECT DATABASE(); 
+
+CREATE TABLE emp2(
+id int,
+emp_name varchar(15)
+)
+
+CREATE TABLE dept2(
+id int,
+dept_name varchar(15)
+)
+
+ALTER TABLE emp2
+MODIFY id int PRIMARY KEY;
+
+DESC emp2;
+
+ALTER TABLE dept2
+ADD PRIMARY KEY(id); 
+
+DESC dept2;
+
+ALTER TABLE emp2
+ADD COLUMN dept_id int;
+
+ALTER TABLE emp2
+ADD CONSTRAINT fk_emp2_dept2_id FOREIGN KEY (dept_id) REFERENCES dept2(id);
+
+SELECT * FROM information_schema.table_constraints
+WHERE table_name = 'emp2'
+
+CREATE DATABASE IF NOT EXISTS test01_library;
+
+USE test01_library;
+SHOW tables;
+DESC books;
+
+ALTER TABLE books
+MODIFY id int AUTO_INCREMENT;
+
+ALTER TABLE books 
+MODIFY name varchar(50) NOT NULL ;
+
+ALTER TABLE books 
+MODIFY authors varchar(100) NOT NULL ;
+
+ALTER TABLE books 
+MODIFY price float NOT NULL ;
+
+ALTER TABLE books
+MODIFY pubdate YEAR NOT NULL;
+
+ALTER TABLE books 
+MODIFY num int NOT NULL ;
+SELECT * FROM books b ;
+
+CREATE DATABASE test04_company;
+USE test04_company;
+
+SELECT DATABASE(); 
+CREATE TABLE offices(
+officeCode int PRIMARY KEY AUTO_INCREMENT,
+city varchar(50) NOT NULL ,
+address varchar(50),
+country varchar(50) NOT NULL,
+postalCode varchar(15) UNIQUE KEY
+)
+SHOW tables;
+DESC offices;
+
+CREATE TABLE employees(
+employeeNumber int PRIMARY KEY AUTO_INCREMENT,
+last_name varchar(50) NOT NULL,
+first_name varchar(50) NOT NULL,
+mobile varchar(25) UNIQUE KEY,
+office_code int NOT NULL ,
+job_title varchar(50) NOT NULL,
+birth datetime NOT NULL,
+note varchar(255),
+sex varchar(5),
+FOREIGN KEY (office_code) REFERENCES offices(officeCode)
+)
+DESC employees_info;
+
+SELECT * FROM information_schema.table_constraints
+WHERE table_name = 'employees'
+
+ALTER TABLE employees MODIFY mobile varchar(25) AFTER office_code;
+
+ALTER TABLE employees
+CHANGE birth employee_birth datetime;
+
+ALTER TABLE employees
+MODIFY sex char(1) NOT NULL;
+
+SELECT * FROM employees_info;
+
+RENAME TABLE employees TO employees_info;
+
+CREATE DATABASE IF NOT EXISTS test04_Market
+
+SHOW DATABASES;
+
+USE test04_Market
+
+CREATE TABLE customers(
+c_num int PRIMARY KEY AUTO_INCREMENT,
+c_name varchar(50),
+c_contact varchar(50),
+c_city varchar(50),
+c_birth datetime NOT NULL 
+)
+
+DESC customers_info;
+
+ALTER TABLE customers 
+MODIFY c_contact varchar(50) AFTER c_birth;
+
+ALTER TABLE customers
+MODIFY c_name varchar(70)
+
+ALTER TABLE customers
+CHANGE c_contact c_phone varchar(50);
+
+ALTER TABLE customers
+ADD COLUMN c_gender char(1)
+
+ALTER TABLE customers
+RENAME customers_info;
+
+ALTER TABLE customers_info
+DROP COLUMN c_city
+
+CREATE TABLE orders(
+o_num int PRIMARY KEY AUTO_INCREMENT,
+o_date date,
+c_id int,
+CONSTRAINT fk_orders_customers_id FOREIGN KEY (c_id) REFERENCES customers_info(c_num)
+)
+DESC orders;
+
+ALTER TABLE orders DROP FOREIGN KEY fk_orders_customers_id;
+
+SHOW INDEX FROM orders;
+ALTER TABLE orders
+DROP INDEX fk_orders_customers_id;
+
+SELECT * FROM information_schema.table_constraints
+WHERE table_name = 'orders'
+
+DROP TABLE customers_info;
+
+SHOW tables;
+
+CREATE TABLE pet(
+name varchar(20) NOT NULL,
+owner varchar(20),
+species varchar(20) NOT NULL,
+sex char(1) NOT NULL,
+birth YEAR NOT NULL,
+death YEAR 
+)
+DESC pet;
+
+INSERT INTO pet(name, owner, species, sex, birth, death)
+VALUES ('Fulffy','Harold', 'cat','f', 2003, 2010),
+('Claws', 'Gwen', 'cat', 'm', 2004, null),
+('Buffy', NULL, 'dog', 'f', 2009, null),
+('Fang', 'Benny', 'dog', 'm', 2000,null),
+('Bowser', 'Diane', 'dog', 'm', 2003, 2009),
+('Chirpy', NULL, 'bird', 'f', 2008, null);
+
+SELECT * FROM pet;
+
+CREATE DATABASE test_company;
+USE test_company;
+CREATE TABLE IF NOT EXISTS department(
+depid int PRIMARY KEY AUTO_INCREMENT,
+depname varchar(30) NOT NULL ,
+depinfo varchar(200)
+)
+DESC department;
+
+CREATE TABLE IF NOT EXISTS emoloyee(
+empid int PRIMARY KEY AUTO_INCREMENT,
+name varchar(20) NOT NULL ,
+sex char(1),
+title varchar(20),
+birthday datetime,
+depid int,
+CONSTRAINT fk_emoloyee_department_depid FOREIGN KEY (depid) REFERENCES department(depid) ON UPDATE CASCADE ON DELETE SET NULL
+)
+DESC emoloyee;
+ALTER TABLE emoloyee
+MODIFY sex char(1) DEFAULT '男'
+
+CREATE TABLE salary(
+empid int NOT NULL UNIQUE,
+basesalary decimal(10,2),
+titlesalary decimal(10,2) DEFAULT 0,
+deduction decimal(10,2) DEFAULT 0
+)
+ALTER TABLE salary 
+MODIFY empid int NULL UNIQUE 
+DESC salary;
+ALTER TABLE salary
+ADD CONSTRAINT fk_salary_emoloyee_empid FOREIGN KEY (empid) REFERENCES emoloyee(empid) ON UPDATE CASCADE ON DELETE SET NULL 
+
+SELECT * FROM information_schema.table_constraints
+WHERE table_name = 'salary'
+
+ALTER TABLE salary
+DROP INDEX empid_2
+
+
+
+
+
