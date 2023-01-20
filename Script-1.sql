@@ -3834,8 +3834,55 @@ ADD CONSTRAINT fk_salary_emoloyee_empid FOREIGN KEY (empid) REFERENCES emoloyee(
 SELECT * FROM information_schema.table_constraints
 WHERE table_name = 'salary'
 
+SHOW INDEX FROM salary;
+
 ALTER TABLE salary
 DROP INDEX empid_2
+
+ALTER TABLE salary DROP FOREIGN KEY fk_salary_emoloyee_empid
+
+ALTER TABLE salary
+ADD CONSTRAINT fk_salary_emoloyee_empid FOREIGN KEY (empid) REFERENCES emoloyee(empid) ON UPDATE CASCADE ON DELETE CASCADE
+
+ALTER TABLE salary
+MODIFY empid int PRIMARY KEY;
+
+DESC department;
+
+INSERT INTO department(depid, depname, depinfo)
+VALUES (111, '生产部', null),(222, '销售部', null),(333,'人事部','人力资源管理')
+
+SELECT * FROM department d ;
+INSERT INTO emoloyee (empid,name, sex, title,birthday, depid)
+VALUES (1001, '张三','男','高级工程师','1975-1-1',111),
+(1002, '李四', '女', '助工', '1985-1-1', 111),
+(1003, '王五', '男', '工程师', '1987-11-11', 222),
+(1004, '张六', '男', '工程师', '1999-1-1', 222)
+
+SELECT * FROM emoloyee e ;
+
+INSERT INTO salary (empid, basesalary, titlesalary, deduction)
+VALUES (1001, 2200, 1100, 200),
+(1002, 1200, 200, null),
+(1003, 2900, 700, 200),
+(1004, 1950, 700, 150)
+
+SELECT * FROM salary s ;
+
+SELECT e.empid, e.name, e.title, d.depname, (s.basesalary + s.titlesalary) AS salary, (s.basesalary + s.titlesalary - IFNULL(s.deduction, 0)) AS realSalary
+FROM emoloyee e JOIN department d JOIN salary s  ON  e.depid =d.depid AND e.empid = s.empid 
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
