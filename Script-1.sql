@@ -4081,9 +4081,83 @@ WHERE c.profession = '计算机维护' AND c.class = '1班'
 SELECT AVG(s.english) AS avg_en, AVG(s.math) AS avg_math, AVG(s.chinese) AS avg_chinese
 FROM score s WHERE name IN (SELECT name FROM classes c WHERE c.profession = '计算机维护' AND c.class = '1班')
 
+SELECT `name` FROM score WHERE english<60 OR math<60 OR chinese<60;
+
+SELECT *
+FROM score INNER JOIN
+(SELECT `name`,COUNT(*) FROM records GROUP BY `name` HAVING COUNT(*)>2) temp
+ON score.name = temp.name;
+
+SELECT DATABASE(); 
+
+SHOW tables;
 
 
+SELECT * FROM score WHERE name IN (SELECT name FROM records r GROUP BY name HAVING COUNT(*) >2 )
 
+CREATE DATABASE test_xuankedb;
+
+USE test_xuankedb;
+
+CREATE TABLE student(
+sno int PRIMARY KEY ,
+sname varchar(20),
+ssex varchar(1),
+sage TINYINT UNSIGNED ,
+sdept varchar(30)
+)
+
+DESC student
+
+DROP TABLE course
+
+CREATE TABLE course(
+cno int PRIMARY KEY ,
+cname varchar(50),
+cpno int,
+ccredit TINYINT UNSIGNED
+)
+
+DESC course;
+
+DROP TABLE sg;
+
+CREATE TABLE sg(
+sno int,
+cno int,
+grade TINYINT UNSIGNED,
+CONSTRAINT pk_s_c PRIMARY KEY (sno, cno),
+CONSTRAINT fk_stu_s_sno FOREIGN KEY (sno) REFERENCES student(sno),
+CONSTRAINT fk_cou_s_sno FOREIGN KEY (cno) REFERENCES course(cno)
+)
+
+DESC SG;
+
+ALTER TABLE student 
+ADD COLUMN scome date;
+
+SELECT s.Sno, s.Grade FROM 
+SG s JOIN Course c ON s.Cno = c.Cpno 
+WHERE c.Cpno = 3 ORDER BY s.Grade DESC ;
+
+SELECT sno,grade FROM sg WHERE cno=3 ORDER BY grade DESC;
+
+SELECT * FROM information_schema.table_constraints
+WHERE table_name = 'sg'
+
+SELECT MAX(grade),AVG(grade) FROM sg WHERE cno=1;
+
+SELECT * FROM student WHERE sdept=(SELECT sdept FROM student WHERE sname='李洋') AND sname != '李洋';
+
+UPDATE sg SET grade=0 WHERE sno IN (SELECT sno FROM student WHERE sdept='计算机系')
+
+DELETE FROM student WHERE sno=05019;
+
+DELETE FROM sg WHERE sno IN (SELECT sno FROM student WHERE sdept='计算机系');
+
+# 清空表
+TRUNCATE TABLE sg;  
+DELETE FROM sg;
 
 
 
