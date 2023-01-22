@@ -3872,6 +3872,219 @@ SELECT * FROM salary s ;
 SELECT e.empid, e.name, e.title, d.depname, (s.basesalary + s.titlesalary) AS salary, (s.basesalary + s.titlesalary - IFNULL(s.deduction, 0)) AS realSalary
 FROM emoloyee e JOIN department d JOIN salary s  ON  e.depid =d.depid AND e.empid = s.empid 
 
+SELECT e.name, s.basesalary FROM
+emoloyee e JOIN department d JOIN salary s ON e.empid = s.empid AND d.depid = e.depid 
+WHERE d.depname = '销售部';
+
+DESC emoloyee ;
+
+SELECT e.empid, e.name, e.sex,e.title, e.birthday,
+e.depid, YEAR (NOW())-YEAR (e.birthday) AS age
+FROM emoloyee e WHERE e.name LIKE '张%' AND YEAR (NOW())-YEAR (e.birthday) < 40;
+
+SELECT e.empid, e.name, e.sex, e.title, e.birthday, e.depid, s.basesalary, s.titlesalary
+FROM emoloyee e JOIN salary s ON e.empid = s.empid WHERE e.sex = '男'
+
+SELECT e.name, e.title, d.depname
+FROM department d JOIN emoloyee e JOIN salary s ON e.empid = s.empid AND e.depid  = d.depid WHERE s.basesalary  < 2000;
+
+SELECT COUNT(*) FROM emoloyee e ; 
+SELECT COUNT(*) FROM department d ; 
+
+SELECT AVG(s.basesalary + s.titlesalary) AS 'avg_salary',
+MAX(s.basesalary+s.titlesalary) AS 'highest_salary',
+MIN(s.basesalary+s.titlesalary) AS 'min_salary'
+FROM salary s ;
+
+SELECT d.depid ,d.depname , AVG(s.basesalary + s.titlesalary) AS avg_salary
+FROM department d JOIN salary s JOIN emoloyee e ON
+e.empid = s.empid AND d.depid = e.depid GROUP BY e.depid 
+
+SELECT d.depid ,d.depname , AVG(s.basesalary) AS avg_base_salary
+FROM department d JOIN salary s JOIN emoloyee e ON
+e.empid = s.empid AND d.depid = e.depid GROUP BY e.depid 
+HAVING avg_base_salary < 2000; 
+
+SELECT e.empid ,e.name, e.title ,s.basesalary, s.titlesalary, s.deduction 
+FROM emoloyee e JOIN salary s ON 
+e.empid = s.empid 
+ORDER BY e.title ASC , s.basesalary ASC;
+
+SELECT e.empid, e.name ,e.birthday ,(CASE 
+WHEN YEAR(e.birthday) < 1980 THEN '老年'
+WHEN YEAR(e.birthday) < 1990 THEN '中年'
+ELSE '青年' END) AS 'age_group'
+FROM emoloyee e ;
+
+SELECT emp.*,depname
+FROM emoloyee emp LEFT JOIN department dep
+ON emp.`depid` = dep.`depid`;
+
+SELECT dep.*,emp.*
+FROM emoloyee emp RIGHT JOIN department dep
+ON emp.`depid` = dep.`depid`;
+
+SELECT COUNT(*) FROM emoloyee WHERE sex='男' AND title LIKE '%工程师%';
+
+SELECT dep.depid, dep.depname ,sex,COUNT(*),AVG(basesalary)
+FROM department dep INNER JOIN emoloyee e INNER JOIN salary
+ON dep.depid = e.depid AND e.empid = salary.empid
+GROUP BY dep.depid,sex;
+
+CREATE DATABASE test_school;
+
+USE test_school;
+
+CREATE TABLE department(
+dep_no int PRIMARY KEY ,
+dep_name varchar(20) NOT NULL,
+dep_note varchar(50)
+)
+CREATE TABLE teacher(
+`number` int PRIMARY KEY ,
+name varchar(30) NOT NULL,
+sex varchar(4),
+birth date,
+dep_no int,
+salary float,
+address varchar(100),
+CONSTRAINT fk_teacher_department_dep_no FOREIGN KEY (dep_no) REFERENCES department(dep_no)
+)
+
+DESC department;
+
+INSERT INTO department(dep_no,dep_name, dep_note)
+VALUES(
+601, '软件技术系', '软件技术等专业'
+),
+(602, '网络技术系', '多媒体技术等专业'),
+(603, '艺术设计系', '广告艺术设计等专业'),
+(604, '管理工程系', '连锁经营管理等专业')
+
+SELECT * FROM department;
+
+INSERT INTO teacher(`number`,name, sex, birth, dep_no, salary, address)
+VALUES (
+2001, 'Tom', '女', '1970-01-10', 602, 4500, '四川省绵阳市'
+),(
+2002, 'Lucy', '男', '1983-12-18', 601, 2500, '北京市昌平区'
+),
+(2003, 'Mike', '男', '1990-06-01', 604, 1500, '重庆市渝中区'),
+(2004, 'James', '女', '1980-10-20', 602, 3500, '四川省成都市'),
+(2005, 'Jack', '男', '1975-05-30', 603, 1200, '重庆市南岸区')
+
+SELECT * FROM teacher
+
+DESC teacher
+
+SELECT * FROM information_schema.table_constraints
+WHERE table_name = 'teacher'
+
+ALTER TABLE teacher DROP FOREIGN KEY fk_teacher_department_dep_no
+
+SHOW INDEX FROM teacher
+
+ALTER TABLE teacher DROP INDEX fk_teacher_department_dep_no
+
+ALTER TABLE teacher ADD CONSTRAINT fk_teacher_department_dep_no FOREIGN KEY (dep_no)
+REFERENCES department(dep_no) ON UPDATE CASCADE ON DELETE RESTRICT
+
+SELECT t.`number` AS "教工号", d.dep_name AS "部门名称"
+FROM teacher t JOIN department d ON d.dep_no = t.dep_no
+WHERE t.address LIKE '%北京%'
+
+SELECT t.`number` , t.name FROM 
+teacher t WHERE t.salary =  (SELECT MAX(salary) FROM teacher)
+
+SELECT t.`number`, t.name FROM teacher t ORDER BY t.salary DESC LIMIT 0,1; 
+
+SELECT t.`number`, t.name FROM teacher t WHERE t.salary >= 2500 AND t.salary <= 4000;
+SELECT t.`number`, t.name FROM teacher t WHERE t.salary BETWEEN 2500 AND 4000;
+
+SELECT t.name, t.sex, t.salary FROM teacher t JOIN department d ON t.dep_no= d.dep_no WHERE d.dep_name = '网络技术系'
+
+SELECT t.name, t.sex, t.salary FROM teacher t 
+WHERE dep_no = (SELECT dep_no FROM department WHERE dep_name = '网络技术系')
+
+CREATE DATABASE test_student;
+
+USE test_student;
+
+CREATE TABLE classes (
+profession varchar(50),
+class varchar(10),
+name varchar(10),
+sex varchar(1),
+seat tinyint
+)
+
+ALTER TABLE classes MODIFY 
+seat TINYINT UNSIGNED;
+
+DESC classes;
+
+INSERT INTO classes(profession, class, name, sex, seat)
+VALUES (
+'计算机网络', '1班', '张三', '男', 8
+),
+('软件工程', '2班','李四','男',12 ),
+('计算机维护', '1班','王五','男', 9),
+('计算机网络', '2班','LILY','女', 15),
+('软件工程', '1班','小强','男', 20),
+('计算机维护', '1班','CoCo','女', 18)
+
+SELECT * FROM classes
+
+CREATE TABLE score (name varchar(10), english TINYINT UNSIGNED, math TINYINT UNSIGNED, chinese TINYINT UNSIGNED)
+
+DESC score;
+
+INSERT INTO score (name, english, math, chinese)
+VALUES 
+('张三', 65, 75, 98),
+('李四', 87, 45, 86),
+('王五', 98, 85, 65),
+('LILY',75 , 86, 87),
+('小强', 85, 60, 58),
+('CoCo', 96, 87, 70);
+
+SELECT * FROM score;
+
+CREATE TABLE records(
+name varchar(10),
+record varchar(4)
+)
+
+DESC records;
+
+INSERT INTO records(name, record)
+VALUES ('小强', '迟到'),
+('小强', '事假'),
+('李四', '旷课'),
+('李四', '旷课'),
+('李四', '迟到'),
+('CoCo', '病假'),
+('LILY', '事假')
+
+SELECT * FROM records;
+
+UPDATE  score
+SET chinese = 88
+WHERE name = '张三'
+
+SELECT * FROM score
+
+SELECT AVG(s.english) AS avg_en, AVG(s.math) AS avg_math, AVG(s.chinese) AS avg_chinese
+FROM score s JOIN classes c ON c.name = s.name
+WHERE c.profession = '计算机维护' AND c.class = '1班'
+
+SELECT AVG(s.english) AS avg_en, AVG(s.math) AS avg_math, AVG(s.chinese) AS avg_chinese
+FROM score s WHERE name IN (SELECT name FROM classes c WHERE c.profession = '计算机维护' AND c.class = '1班')
+
+
+
+
+
 
 
 
