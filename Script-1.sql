@@ -4211,9 +4211,74 @@ SELECT * FROM book WHERE pressid = 100;
 SELECT b.bid, b.bname, b.bsortno, b.pressid, p.pressname, p.address FROM 
 book b JOIN press p ON b.pressid = p.pressid WHERE p.pressname = '外研社'
 
+SELECT * FROM sort s JOIN book b ON s.sortno = b.bsortno WHERE s.scount > 100
+
+SELECT * FROM press WHERE pressid = (
+SELECT my_table.pressid FROM (SELECT pressid, COUNT(*) AS num FROM book b GROUP BY b.pressid ORDER BY num DESC LIMIT 0,1) AS my_table
+) 
+
+SELECT * FROM press WHERE pressid=(
+SELECT pressid
+FROM (SELECT pressid,bsortno FROM book GROUP BY pressid,bsortno) temp
+GROUP BY pressid
+ORDER BY COUNT(*) DESC
+LIMIT 0,1)
+
+CREATE DATABASE test_tour;
+
+CREATE TABLE agency(
+id int PRIMARY KEY,
+name varchar(50) NOT NULL ,
+address varchar(100) NOT NULL,
+areaid int
+)
+
+CREATE TABLE travel(
+tid int PRIMARY KEY ,
+time varchar(30) NOT NULL,
+`position` varchar(50) NOT NULL,
+money float,
+aid int NOT NULL,
+`count` int,
+CONSTRAINT fk_travel_agency_aid FOREIGN KEY (aid) REFERENCES agency(id) ON UPDATE CASCADE ON DELETE RESTRICT
+)
+
+DESC travel;
 
 
+SELECT * FROM information_schema.table_constraints
+WHERE table_name = 'travel'
 
+INSERT INTO agency(id, name, address)
+VALUES (101, '青年旅行社', '北京海淀'),
+(102, '天天旅行社', '天津海院')
+
+INSERT INTO travel(tid, time, `position`, money, aid, `count`)
+VALUES (1, '5天', '八达岭', 3000, 101, 10),
+(2, '7天', '水长城', 5000, 101, 14),
+(3, '8天', '水长城', 6000, 102, 11);
+
+SELECT * FROM travel;
+SELECT * FROM agency;
+
+SELECT * FROM agency WHERE id = (SELECT aid FROM (SELECT COUNT(*) AS num, aid FROM travel GROUP BY aid ORDER BY num DESC LIMIT 0,1) count_aid)
+
+SELECT *
+FROM agency INNER JOIN
+(SELECT t.aid, MAX(t.c) FROM (SELECT aid,COUNT(*) AS c FROM travel GROUP BY aid) AS
+t GROUP BY t.aid ORDER BY t.c DESC LIMIT 0,1 ) temp
+ON agency.id = temp.aid
+
+SELECT NAME FROM agency WHERE id =
+(SELECT aid FROM travel WHERE money =(SELECT MAX(money) FROM travel ));
+
+SELECT * FROM travel ORDER BY `count` DESC LIMIT 0,1;
+
+SELECT * FROM travel WHERE money < 5000;
+
+SELECT * FROM travel ORDER BY money DESC LIMIT 0,1 
+
+SELECT SUM(money) FROM travel WHERE aid = (SELECT id FROM agency WHERE name = '青年旅行社')
 
 
 
