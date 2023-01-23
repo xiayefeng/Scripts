@@ -4159,11 +4159,57 @@ DELETE FROM sg WHERE sno IN (SELECT sno FROM student WHERE sdept='计算机系')
 TRUNCATE TABLE sg;  
 DELETE FROM sg;
 
+CREATE DATABASE test_library;
 
+CREATE  TABLE press(
+pressid int PRIMARY KEY,
+pressname varchar(20),
+address varchar(50)
+)
 
+CREATE TABLE sort(
+sortno int,
+scount int
+)
 
+CREATE TABLE book(
+bid int,
+bname varchar(50),
+bsortno int,
+pressid int
+)
 
+ALTER TABLE sort ADD COLUMN describes varchar(200);
 
+DESC sort;
+
+INSERT INTO press (pressid, pressname, address)
+VALUES (100, '外研社', '上海'),
+(101, '北大出版社', '北京'),
+(102, '教育出版社', '北京')
+
+SELECT * FROM press;
+
+INSERT INTO sort(sortno, scount, describes)
+VALUES (11, 50, '小说'),
+(12, 300, '科幻'),
+(13, 100, '神话')
+
+SELECT * FROM sort;
+
+DESC book;
+
+INSERT INTO book(bid, bname, bsortno, pressid)
+VALUES (1, '红与黑', 11, 100),
+(2, '幻城', 12, 102),
+(3,'希腊神话', 13, 102)
+
+SELECT * FROM book;
+
+SELECT * FROM book WHERE pressid = 100;
+
+SELECT b.bid, b.bname, b.bsortno, b.pressid, p.pressname, p.address FROM 
+book b JOIN press p ON b.pressid = p.pressid WHERE p.pressname = '外研社'
 
 
 
