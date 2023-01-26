@@ -4330,6 +4330,170 @@ SELECT * FROM emp_v2
 
 DROP VIEW IF EXISTS emp_v1,emp_v2
 
+CREATE DATABASE dbtest15;
+
+USE dbtest15;
+
+SHOW tables;
+
+CREATE TABLE employees AS
+SELECT * FROM atguigudb.employees e;
+
+CREATE TABLE departments AS
+SELECT * FROM atguigudb.departments d;
+
+SELECT * FROM employees e;
+
+SELECT * FROM departments d;
+
+-- DELIMITER _
+
+CREATE PROCEDURE select_all_data()
+LANGUAGE SQL
+BEGIN
+    SELECT * FROM employees;
+END
+
+-- DELIMITER ;
+
+SELECT DATABASE();
+
+CALL select_all_data();
+
+CREATE PROCEDURE avg_employee_salary()
+BEGIN 
+    SELECT avg(salary) FROM employees;
+END
+
+CALL avg_employee_salary();
+
+CREATE PROCEDURE show_max_salary()
+BEGIN 
+    SELECT MAX(salary)
+    FROM employees;
+END
+
+CALL show_max_salary();
+
+CREATE PROCEDURE show_min_salary(OUT ms double)
+BEGIN 
+    SELECT MIN(salary) INTO ms FROM 
+    employees;
+END
+
+CALL show_min_salary(@ms);
+
+SELECT @ms;
+
+CREATE PROCEDURE show_someone_salary(IN empname varchar(20))
+BEGIN
+    SELECT salary FROM employees
+    WHERE last_name = empname;
+END
+
+CALL show_someone_salary('Abel')
+
+SET @empname = 'Abel';
+CALL show_someone_salary(@empname);
+
+CREATE PROCEDURE show_someone_salary2(IN empname VARCHAR(20), OUT empsalary decimal(10, 2))
+BEGIN 
+    SELECT salary INTO empsalary
+    FROM employees
+    WHERE last_name = empname;
+END
+
+SET @empname := 'Abel';
+CALL show_someone_salary2(@empname, @empsalary)
+
+SELECT @empsalary;
+
+CREATE PROCEDURE show_mgr_name(INOUT empname varchar(25))
+BEGIN 
+    SELECT last_name INTO empname FROM 
+    employees WHERE employee_id = (SELECT manager_id FROM employees
+    WHERE last_name = empname);
+END
+
+SET @empname = 'Abel';
+CALL show_mgr_name(@empname);
+SELECT @empname;
+
+CREATE FUNCTION email_by_name()
+RETURNS varchar(25)
+  LANGUAGE SQL
+  NOT DETERMINISTIC 
+  READS SQL DATA 
+  SQL SECURITY DEFINER 
+  comment '查询邮箱'
+BEGIN 
+    RETURN (SELECT email FROM employees
+    WHERE last_name = 'Abel');
+END;
+
+SELECT email_by_name();
+
+CREATE FUNCTION email_by_id(emp_id int)
+RETURNS varchar(25)
+  LANGUAGE SQL
+  NOT DETERMINISTIC 
+  READS SQL DATA 
+  SQL SECURITY DEFINER
+BEGIN 
+    RETURN (SELECT email FROM employees WHERE employee_id = emp_id);
+END
+
+SELECT email_by_id(101);
+
+SET @mep_id =102
+SELECT email_by_id(@mep_id);
+
+CREATE FUNCTION count_by_id(dept_id int)
+RETURNS int
+LANGUAGE SQL
+  NOT DETERMINISTIC 
+  READS SQL DATA 
+  SQL SECURITY DEFINER
+BEGIN 
+    RETURN (SELECT count(*) FROM employees e WHERE department_id = dept_id);
+END
+
+SET @dept_id = 30;
+SELECT count_by_id(@dept_id);
+
+DROP FUNCTION count_by_id;
+
+SHOW CREATE PROCEDURE show_mgr_name;
+SHOW CREATE FUNCTION count_by_id;
+
+SHOW PROCEDURE status;
+
+SHOW PROCEDURE status LIKE 'show_max_salary';
+
+SHOW FUNCTION status LIKE 'email_by_id'
+
+SELECT * FROM information_schema.Routines
+WHERE ROUTINE_NAME='email_by_id'
+# [AND ROUTINE_TYPE = {'PROCEDURE|FUNCTION'}];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
