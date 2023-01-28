@@ -4562,15 +4562,15 @@ END
 DROP PROCEDURE format_date;
 
 SET @date1 = '2001-09-23'
-CALL format_date(@date1, @strdate)
-SELECT @strdate;
+CALL format_date(@date1, @str_date)
+SELECT @str_date;
 
 CREATE PROCEDURE beauty_limit(IN start_idx int, IN end_idx int)
 BEGIN 
-    SELECT * FROM beauty ORDER BY id LIMIT start_idx, start_idx + end_idx - 1;
+    SELECT * FROM beauty ORDER BY id LIMIT start_idx, end_idx;
 END
 
-CALL beauty_limit(1, 5)
+CALL beauty_limit(0, 5)
 
 CREATE PROCEDURE add_double(INOUT a int, INOUT b int)
 BEGIN 
