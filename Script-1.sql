@@ -4482,6 +4482,206 @@ SQL SECURITY INVOKER;
 ALTER FUNCTION email_by_id
 SQL SECURITY INVOKER;
 
+CREATE DATABASE test15_pro_func;
+
+USE test15_pro_func;
+
+CREATE TABLE admin(
+id INT PRIMARY KEY AUTO_INCREMENT,
+user_name VARCHAR(15) NOT NULL,
+pwd VARCHAR(25) NOT NULL
+);
+
+SELECT * FROM admin;
+
+CREATE PROCEDURE insert_user(IN amount varchar(15), IN pwd varchar(25))
+    LANGUAGE SQL
+    NOT DETERMINISTIC 
+    READS SQL DATA 
+    SQL SECURITY INVOKER
+BEGIN 
+    INSERT INTO admin (user_name, pwd)
+    VALUES (amount, pwd);
+END
+
+CALL insert_user('aaa', 'dadfaf')
+
+CREATE TABLE beauty(
+id INT PRIMARY KEY AUTO_INCREMENT,
+`name` VARCHAR(15) NOT NULL,
+phone VARCHAR(15) UNIQUE,
+birth DATE
+);
+
+INSERT INTO beauty(`name`,phone,birth)
+VALUES
+('朱茵','13201233453','1982-02-12'),
+('孙燕姿','13501233653','1980-12-09'),
+('田馥甄','13651238755','1983-08-21'),
+('邓紫棋','17843283452','1991-11-12'),
+('刘若英','18635575464','1989-05-18'),
+('杨超越','13761238755','1994-05-11');
+
+SELECT * FROM beauty;
+
+CREATE PROCEDURE get_phone(IN num int, OUT b_name varchar(15), OUT b_phone varchar(15))
+    LANGUAGE SQL
+    NOT DETERMINISTIC 
+    READS SQL DATA 
+    SQL SECURITY INVOKER
+BEGIN 
+    SELECT `name`, phone INTO b_name, b_phone FROM 
+    beauty WHERE id = num;
+END
+
+CALL get_phone(4, @b_name, @b_phone)
+
+SELECT @b_name, @b_phone;
+
+CREATE PROCEDURE date_diff(IN date1 date, IN date2 date, OUT date3 int)
+    LANGUAGE SQL
+    NOT DETERMINISTIC 
+    READS SQL DATA 
+    SQL SECURITY INVOKER
+BEGIN 
+    SELECT DATEDIFF(date1, date2) INTO date3 FROM DUAL;
+END
+
+
+CALL date_diff('1998-09-17', '1988-09-19', @date_diff)
+
+SELECT @date_diff;
+
+DROP PROCEDURE date_diff;
+
+CREATE PROCEDURE format_date(IN date1 datetime, OUT strdate varchar(30))
+BEGIN 
+    SELECT DATE_FORMAT(date1, '%Y年%m月%d日') INTO strdate;
+END
+
+DROP PROCEDURE format_date;
+
+SET @date1 = '2001-09-23'
+CALL format_date(@date1, @strdate)
+SELECT @strdate;
+
+CREATE PROCEDURE beauty_limit(IN start_idx int, IN end_idx int)
+BEGIN 
+    SELECT * FROM beauty ORDER BY id LIMIT start_idx, start_idx + end_idx - 1;
+END
+
+CALL beauty_limit(1, 5)
+
+CREATE PROCEDURE add_double(INOUT a int, INOUT b int)
+BEGIN 
+    SET a = a * 2;
+    SET b = b * 2;
+END
+
+SET @a =3, @b =5;
+CALL add_double(@a, @b)
+SELECT @a, @b;
+
+DROP PROCEDURE beauty_limit;
+
+SHOW CREATE PROCEDURE add_double;
+
+CREATE DATABASE test15_pro_func;
+
+USE test15_pro_func;
+SHOW tables;
+
+CREATE TABLE employees
+AS SELECT * FROM atguigudb.employees;
+
+SELECT * FROM employees;
+
+CREATE TABLE departments
+AS SELECT * FROM atguigudb.departments;
+
+CREATE FUNCTION get_count()
+RETURNS int
+LANGUAGE SQL
+  NOT DETERMINISTIC 
+  READS SQL DATA 
+  SQL SECURITY DEFINER
+BEGIN 
+    RETURN (SELECT count(*) FROM employees);
+END
+
+SELECT get_count();
+
+CREATE FUNCTION ename_salary(name varchar(20))
+RETURNS double
+LANGUAGE SQL
+  NOT DETERMINISTIC 
+  READS SQL DATA 
+  SQL SECURITY DEFINER
+BEGIN 
+    RETURN (SELECT salary FROM employees WHERE last_name = name);
+END
+
+SELECT ename_salary('Abel')
+
+CREATE FUNCTION dept_sal(dept_name varchar(20))
+RETURNS double
+LANGUAGE SQL
+  NOT DETERMINISTIC 
+  READS SQL DATA 
+  SQL SECURITY DEFINER
+BEGIN 
+    SET @avg_salary = NULL;
+    SET @dept_id = NULL ;
+    SELECT department_id, avg(salary) INTO @dept_id, @avg_salary FROM employees GROUP BY department_id HAVING department_id = (SELECT department_id FROM departments WHERE department_name = dept_name);
+    RETURN (@avg_salary);
+END
+
+DROP FUNCTION dept_sal;
+
+SELECT department_id, avg(salary) FROM employees GROUP BY department_id HAVING department_id = (SELECT department_id FROM departments WHERE department_name = 
+'IT')
+
+SELECT * FROM departments;
+
+CREATE FUNCTION dept_sal2(dept_name VARCHAR(20))
+RETURNS DOUBLE
+LANGUAGE SQL
+  NOT DETERMINISTIC 
+  READS SQL DATA 
+  SQL SECURITY DEFINER
+BEGIN
+RETURN (
+SELECT AVG(salary)
+FROM employees e JOIN departments d
+ON e.department_id = d.department_id
+WHERE d.department_name = dept_name
+);
+END
+
+SELECT dept_sal2('IT')
+SELECT dept_sal2('Marketing')
+SELECT dept_sal('IT')
+SELECT dept_sal('Marketing')
+
+CREATE FUNCTION add_float(num1 float, num2 float)
+RETURNS double
+LANGUAGE SQL
+  NOT DETERMINISTIC 
+  READS SQL DATA 
+  SQL SECURITY DEFINER
+BEGIN 
+    SET @num = num1 + num2;
+    RETURN (@num);
+END
+
+SELECT add_float(0.1, 0.2)
+
+
+
+
+
+
+
 
 
 
