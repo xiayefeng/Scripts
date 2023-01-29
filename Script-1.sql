@@ -4676,6 +4676,14 @@ END
 
 SELECT add_float(0.1, 0.2)
 
+SHOW GLOBAL VARIABLES;
+
+SHOW SESSION VARIABLES;
+
+SHOW GLOBAL variables LIKE 'max_connections'
+
+
+
 
 
 
