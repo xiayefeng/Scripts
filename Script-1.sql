@@ -4682,6 +4682,10 @@ SHOW SESSION VARIABLES;
 
 SHOW GLOBAL variables LIKE 'max_connections'
 
+SELECT @@global.max_connections;
+
+SET GLOBAL max_connections = 180;
+
 
 
 
