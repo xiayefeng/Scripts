@@ -4686,8 +4686,25 @@ SELECT @@global.max_connections;
 
 SET GLOBAL max_connections = 180;
 
+SELECT DATABASE();
 
+CREATE DATABASE IF NOT EXISTS dbtest16;
 
+USE dbtest16;
+
+CREATE PROCEDURE add_val()
+BEGIN
+    DECLARE value1 int;
+    DECLARE value2, sum_val int;
+  
+    SET value1 =10;
+    SET value2 := 100;
+    
+    SET sum_val = value1 + value2;
+    SELECT sum_val;
+END;
+
+CALL add_val();
 
 
 
