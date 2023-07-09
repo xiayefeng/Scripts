@@ -2,3 +2,13 @@ SELECT VERSION(), DATABASE(),  CONNECTION_ID(), SCHEMA(), USER (), CURRENT_USER(
 COLLATION ('abc')
 FROM DUAL;
 
+SHOW tables;
+
+SELECT DATABASE();
+
+DESC t_user;
+
+ALTER TABLE t_user
+ADD COLUMN userAvator varchar(50) AFTER userId;
+
+

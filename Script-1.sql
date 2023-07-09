@@ -4706,6 +4706,87 @@ END;
 
 CALL add_val();
 
+SHOW tables;
+
+SHOW DATABASES;
+
+USE dbtest15;
+
+SELECT * FROM employees e WHERE e.last_name = 'Abel';
+
+
+
+DECLARE Field_Not_Be_NUll CONDITION FOR  1048;
+
+
+DECLARE Field_Not_Be_NULL CONDITION FOR SQLSTATE '23000';
+
+DECLARE CONTINUE HANDLER FOR Field_Not_Be_NULL SET @pro_info = -1;
+
+CREATE PROCEDURE UpdateDataNoCondition()
+  BEGIN 
+      DECLARE CONTINUE handler FOR 1048 SET @pro_info = -1;
+  
+      SET @x = 1;
+      UPDATE employees SET email = NULL WHERE last_name = 'Abel';
+      SET @x = 2;
+      UPDATE employees SET email = 'asfaf@aba.cdd' WHERE last_name= 'Abel';
+      SET @x =3;
+  END
+  
+  CALL UpdateDataNoCondition();
+  
+SELECT @x, @pro_info;
+
+DESC employees;
+
+
+CREATE PROCEDURE update_salary_by_eid4(IN emp_id INT)
+BEGIN 
+    DECLARE emp_sal DOUBLE; # 记录员工的工资
+    DECLARE bonus DOUBLE; # 记录员工的奖金率
+    
+    # 局部变量的赋值
+    SELECT salary INTO emp_sal FROM employees e WHERE employee_id = emp_id;
+    SELECT commission_pct INTO bonus FROM employees e WHERE employee_id = emp_id;
+
+    CASE 
+        WHEN emp_sal < 9000 THEN UPDATE employees SET salary = 9000 WHERE employee_id = emp_id;
+        WHEN emp_sal < 10000 AND bonus IS NULL THEN UPDATE employees SET commission_pct = 0.01 WHERE employee_id = emp_id;
+        ELSE UPDATE employees SET salary = salary + 100 WHERE employee_id = emp_id;
+    END CASE;
+END;
+
+CALL update_salary_by_eid4(103);
+CALL update_salary_by_eid4(104);
+CALL update_salary_by_eid4(102);
+
+CREATE PROCEDURE update_salary_by_eid5(IN emp_id INT)
+BEGIN 
+    DECLARE hire_year INT; # 记录员工入职公司的总时间
+    
+    SELECT ROUND(DATEDIFF(CURDATE(), hire_date) / 365) INTO hire_year FROM employees e WHERE e.employee_id = emp_id;
+   
+    CASE hire_year
+      WHEN 0 THEN UPDATE employees SET salary = salary + 50 WHERE employee_id = emp_id;
+      WHEN 1 THEN UPDATE employees SET salary = salary + 100 WHERE employee_id = emp_id;
+      WHEN 2 THEN UPDATE employees SET salary = salary + 200 WHERE employee_id = emp_id;
+      WHEN 3 THEN UPDATE employees SET salary = salary + 300 WHERE employee_id = emp_id;
+      WHEN 4 THEN UPDATE employees SET salary = salary + 400 WHERE employee_id = emp_id;
+      ELSE UPDATE employees SET salary = salary + 500 WHERE employee_id = emp_id;
+    END CASE;
+   
+END;
+
+CALL update_salary_by_eid5(101);
+
+SELECT * FROM employees e;
+
+SHOW DATABASES;
+SELECT database();
+SHOW tables;
+
+
 
 
 
