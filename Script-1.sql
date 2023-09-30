@@ -4838,6 +4838,60 @@ DROP PROCEDURE test_while;
 
 CALL test_while();
 
+CREATE PROCEDURE update_salary_while(OUT num int)
+BEGIN 
+    DECLARE avg_sal double;
+    DECLARE loop_count int DEFAULT 0;
+   SELECT AVG(e.salary) INTO avg_sal FROM employees e;
+   WHILE avg_sal > 5000 DO
+     UPDATE employees SET salary = salary * 0.9;
+     SET loop_count = loop_count + 1;
+     SELECT AVG(salary) INTO avg_sal FROM employees;
+    END WHILE;
+    SET num = loop_count;
+END;
+
+SET @num = 0;
+CALL update_salary_while(@num);
+SELECT @num;
+
+SELECT AVG(salary) FROM employees e;
+
+CREATE PROCEDURE test_repeat()
+BEGIN 
+    DECLARE num int DEFAULT 1;
+   REPEAT 
+        SET num = num + 1;
+        until num >= 10
+    END REPEAT;
+    SELECT num;
+END;
+
+CALL test_repeat();
+
+CREATE PROCEDURE update_salary_repeat(OUT num int)
+BEGIN 
+     DECLARE avg_sal double;
+     DECLARE loop_count int DEFAULT 0;
+     SELECT AVG(e.salary) INTO avg_sal FROM employees e;
+     REPEAT 
+         UPDATE employees SET salary = salary * 1.15;
+         SET loop_count = loop_count + 1;
+         SELECT AVG(e.salary) INTO avg_sal FROM employees e;
+         until avg_sal >= 13000
+     END REPEAT;
+ 
+     SET num = loop_count;
+END ;
+
+SELECT AVG(e.salary) FROM employees e;
+
+CALL update_salary_repeat(@num);
+
+SELECT @num;
+
+
+
 
 
 
