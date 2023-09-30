@@ -4859,7 +4859,7 @@ SELECT AVG(salary) FROM employees e;
 
 CREATE PROCEDURE test_repeat()
 BEGIN 
-    DECLARE num int DEFAULT 1;
+    DECLARE num INT DEFAULT 1;
    REPEAT 
         SET num = num + 1;
         until num >= 10
@@ -4869,10 +4869,10 @@ END;
 
 CALL test_repeat();
 
-CREATE PROCEDURE update_salary_repeat(OUT num int)
+CREATE PROCEDURE update_salary_repeat(OUT num INT)
 BEGIN 
-     DECLARE avg_sal double;
-     DECLARE loop_count int DEFAULT 0;
+     DECLARE avg_sal DOUBLE;
+     DECLARE loop_count INT DEFAULT 0;
      SELECT AVG(e.salary) INTO avg_sal FROM employees e;
      REPEAT 
          UPDATE employees SET salary = salary * 1.15;
@@ -4889,6 +4889,69 @@ SELECT AVG(e.salary) FROM employees e;
 CALL update_salary_repeat(@num);
 
 SELECT @num;
+
+CREATE PROCEDURE leave_begin(IN num INT)
+begin_label:BEGIN 
+    IF num <= 0
+      THEN LEAVE begin_label;
+    ELSEIF num = 1
+      THEN SELECT AVG(salary) FROM employees e;
+    ELSEIF num = 2
+      THEN SELECT MIN(salary) FROM employees e;
+    ELSE 
+      SELECT max(salary) FROM employees e;
+    END IF;
+    SELECT count(*) FROM employees e;
+END;
+
+CALL leave_begin(3);
+
+CREATE PROCEDURE leave_while(OUT num INT)
+BEGIN 
+    DECLARE avg_sal DOUBLE;
+    DECLARE while_count INT DEFAULT 0;
+    SELECT AVG(salary) INTO avg_sal FROM employees e;
+
+    while_label:WHILE TRUE DO
+      IF avg_sal <= 10000 THEN 
+        LEAVE while_label;
+      END IF;
+      UPDATE employees SET salary = salary * 0.9;
+      SET while_count = while_count + 1;
+      
+      SELECT AVG(salary) INTO avg_sal FROM employees;
+     END WHILE;
+      SET num = while_count;
+END;
+
+DROP PROCEDURE leave_while;
+
+SET @num = 0;
+CALL leave_while(@num)
+
+SELECT @num;
+
+SELECT AVG(salary) FROM employees e;
+
+# ITERATE 的使用
+
+ CREATE PROCEDURE test_iterate()
+ BEGIN 
+     DECLARE num INT DEFAULT 0;
+     loop_label:LOOP
+       SET num = num + 1;
+       IF num <= 10
+         THEN ITERATE loop_label;
+        ELSEIF num > 15
+          THEN LEAVE loop_label;
+        END IF;
+        SELECT 'asdfasf';
+     END LOOP loop_label;
+ END;
+ 
+ DROP PROCEDURE test_iterate;
+ 
+ CALL test_iterate();
 
 
 
