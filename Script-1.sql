@@ -4953,8 +4953,122 @@ SELECT AVG(salary) FROM employees e;
  
  CALL test_iterate();
 
+SELECT * FROM employees e;
 
 
+CREATE PROCEDURE get_count_by_limit_total_salary(IN limit_total_salary DOUBLE, OUT total_count INT)
+BEGIN 
+    DECLARE sum_sal DOUBLE DEFAULT 0;
+    DECLARE emp_sal DOUBLE;
+    DECLARE emp_count INT DEFAULT 0;
+    
+    DECLARE emp_cursor CURSOR FOR SELECT salary FROM employees e ORDER BY salary DESC;
+    OPEN emp_cursor;
+
+    REPEAT 
+      FETCH emp_cursor INTO emp_sal;
+      SET sum_sal = sum_sal + emp_sal;
+      SET emp_count = emp_count +1;
+      UNTIL sum_sal >= limit_total_salary
+    END REPEAT;
+    SET total_count = emp_count;
+    CLOSE emp_cursor;
+    
+END;
+
+SET @total_count = 0;
+CALL get_count_by_limit_total_salary(200000, @total_count);
+SELECT @total_count;
+
+show variables like '%max_connections%';
+
+# 持久化
+SET PERSIST global max_connections = 1000;
+
+CREATE DATABASE test16_var_cur;
+
+USE test16_var_cur;
+
+CREATE TABLE employees AS SELECT * FROM atguigudb.employees e;
+
+CREATE TABLE departments AS SELECT * FROM atguigudb.departments d;
+
+SHOW tables;
+
+CREATE FUNCTION get_count()
+RETURNS int
+LANGUAGE SQL
+  NOT DETERMINISTIC 
+  READS SQL DATA 
+  SQL SECURITY DEFINER 
+BEGIN
+    DECLARE c INT DEFAULT 0;
+    SELECT COUNT(*) INTO c FROM employees;
+    RETURN c;
+END;
+
+SELECT get_count();
+
+show variables like '%log_bin_trust_function_creators%';
+SET GLOBAL log_bin_trust_function_creators = 1;
+
+CREATE FUNCTION ename_salary(emp_name VARCHAR(15))
+RETURNS double
+  
+BEGIN 
+    SET @sal = 0;
+    SELECT salary INTO @sal
+    FROM employees
+    WHERE last_name = emp_name;
+    RETURN @sal;
+END;
+
+SELECT ename_salary('Abel');
+
+SELECT * FROM employees;
+
+CREATE FUNCTION dept_sal(dept_name varchar(15))
+RETURNS double
+BEGIN 
+    DECLARE avg_sal double;
+    SELECT AVG(salary) INTO avg_sal FROM employees
+    JOIN departments ON employees.department_id = departments.department_id
+    WHERE departments.department_name=dept_name;
+    RETURN avg_sal;
+END;
+
+
+SELECT dept_sal('Marketing');
+
+CREATE FUNCTION add_float(value1 float, value2 float)
+RETURNS float
+BEGIN
+    DECLARE num float;
+    SET num = value1 + value2;
+    RETURN num;
+END;
+
+SET @v1 = 12.2;
+SET @v2 = 2.3;
+
+SELECT add_float(@v1, @v2);
+
+CREATE FUNCTION test_if_case(score float)
+RETURNS char
+BEGIN 
+    DECLARE ch char;
+   IF score > 90
+     THEN SET ch = 'A';
+    ELSEIF score >80
+      THEN SET ch = 'B';
+    ELSEIF score > 60
+      THEN SET ch = 'C';
+    ELSE SET ch = 'D';
+    END IF ;
+    RETURN ch;
+END;
+
+SELECT test_if_case(91) AS `result`;
 
 
 
