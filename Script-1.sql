@@ -5068,12 +5068,103 @@ BEGIN
     RETURN ch;
 END;
 
+CREATE FUNCTION test_if_case2(score DOUBLE)
+RETURNS CHAR
+BEGIN
+  DECLARE ch CHAR;
+  CASE
+    WHEN score>90 THEN SET ch='A';
+    WHEN score>80 THEN SET ch='B';
+    WHEN score>60 THEN SET ch='C';
+    ELSE SET ch='D';
+  END CASE;
+  RETURN ch;
+END;
+
 SELECT test_if_case(91) AS `result`;
+SELECT test_if_case2(60) AS `result`;
+
+CREATE PROCEDURE test_if_pro(IN emp_salary DOUBLE)
+BEGIN 
+    IF emp_salary < 3000
+      THEN DELETE FROM employees WHERE salary = emp_salary;
+    ELSEIF emp_salary <= 5000
+      THEN UPDATE employees SET salary = salary+1000 WHERE salary = emp_salary;
+    ELSE
+      UPDATE employees SET salary = salary + 500 WHERE salary = emp_salary;
+    END IF;
+END;
+
+DROP PROCEDURE test_if_pro;
+
+CREATE PROCEDURE test_if_pro2(IN sal DOUBLE)
+BEGIN
+IF sal<3000
+THEN DELETE FROM employees WHERE salary = sal;
+ELSEIF sal <= 5000
+THEN UPDATE employees SET salary = salary+1000 WHERE salary = sal;
+ELSE
+UPDATE employees SET salary = salary+500 WHERE salary = sal;
+END IF;
+END;
+
+SELECT * FROM employees e WHERE e.salary = 4371.19;
+UPDATE employees SET salary = salary - 1000 WHERE salary = 5371.19
+
+CALL test_if_pro(4371.19);
+
+CREATE TABLE admin(
+  id int PRIMARY KEY AUTO_INCREMENT,
+  user_name varchar(25) NOT NULL,
+  user_pwd varchar(35) NOT NULL 
+);
+
+SELECT * FROM admin;
+
+CREATE PROCEDURE insert_data(IN insert_count int)
+BEGIN
+    DECLARE i int DEFAULT 1;
+    WHILE i<= insert_count DO
+      INSERT INTO admin(user_name, user_pwd) VALUES(CONCAT('Rose-', i), round(rand() * 100000));
+     SET i = i +1;
+   END WHILE;
+END;
+
+CALL insert_data(100);
+
+CREATE PROCEDURE update_salary(IN dept_id INT, IN change_sal_count INT)
+BEGIN 
+    DECLARE int_count int DEFAULT 0;
+    DECLARE salary_rate double DEFAULT 0.0;
+    DECLARE emp_id int;
+    DECLARE emp_hrie_date date;
+    
+    DECLARE emp_cursor CURSOR FOR SELECT employee_id, hire_date FROM employees e
+    WHERE department_id = dept_id ORDER BY salary;
+
+   OPEN emp_cursor;
+   WHILE int_count < change_sal_count DO
+     FETCH emp_cursor INTO emp_id, emp_hrie_date;
+       IF (YEAR(emp_hrie_date) < 1995)
+         THEN SET salary_rate = 1.2;
+       ELSEIF (YEAR(emp_hrie_date) <= 1998)
+         THEN SET salary_rate = 1.15;
+       ELSEIF (YEAR(emp_hrie_date) <= 2001)
+         THEN SET salary_rate = 1.10;
+       ELSE  SET salary_rate = 1.05;
+       END IF;
+     UPDATE employees SET salary = salary * salary_rate WHERE employee_id = emp_id;
+     SET int_count = int_count + 1;
+   END WHILE;
+   CLOSE emp_cursor;
+END;
 
 
+SELECT * FROM employees e WHERE e.department_id = 50;
+SELECT employee_id, hire_date, salary FROM employees e
+    WHERE department_id = 50 ORDER BY salary;
 
-
-
+CALL update_salary(50, 2);
 
 
 
