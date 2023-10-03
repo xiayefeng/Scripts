@@ -5244,7 +5244,209 @@ SELECT * FROM information_schema.TRIGGERS;
 
 DROP TRIGGER IF EXISTS after_insert_test_tri;
 
+CREATE DATABASE test17_trigger;
+USE test17_trigger;
 
+CREATE TABLE emps AS SELECT employee_id, last_name, salary
+FROM atguigudb.employees e;
+
+SELECT * FROM emps;
+
+CREATE TABLE emps_back AS SELECT * FROM emps WHERE 1=2;
+
+SELECT * FROM emps_back;
+
+CREATE TRIGGER esps_insert_triger 
+AFTER INSERT ON emps
+FOR EACH ROW 
+BEGIN
+    INSERT INTO emps_back(employee_id, last_name, salary) VALUES (NEW.employee_id, NEW.last_name, NEW.salary);
+END;
+
+SHOW triggers;
+
+SELECT * FROM emps;
+
+SELECT * FROM emps_back;
+
+INSERT INTO emps(employee_id, last_name, salary) VALUES (300, 'Jane', 3400);
+INSERT INTO emps(employee_id, last_name, salary) VALUES (301, 'Janes', 3500);
+
+CREATE TABLE emps_back1 AS SELECT * FROM emps WHERE 1=2;
+
+SELECT * FROM emps_back1;
+
+CREATE TRIGGER emps_del_trigger
+BEFORE DELETE ON emps
+FOR EACH ROW 
+BEGIN
+    INSERT INTO emps_back1(employee_id, last_name, salary) VALUES (OLD.employee_id, OLD.last_name, OLD.salary);
+END;
+
+SELECT * FROM emps;
+DELETE FROM emps;
+DELETE FROM emps WHERE employee_id = 300;
+
+CREATE DATABASE dbtest18;
+USE dbtest18;
+
+CREATE TABLE sales(
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  city VARCHAR(15),
+  county VARCHAR(15),
+  sales_value DECIMAL
+);
+
+INSERT INTO sales(city,county,sales_value)
+VALUES
+('北京','海淀',10.00),
+('北京','朝阳',20.00),
+('上海','黄埔',30.00),
+('上海','长宁',10.00);
+
+SELECT * FROM sales;
+
+SHOW tables;
+
+CREATE TABLE goods(
+id INT PRIMARY KEY AUTO_INCREMENT,
+category_id INT,
+category VARCHAR(15),
+NAME VARCHAR(30),
+price DECIMAL(10,2),
+stock INT,
+upper_time DATETIME
+);
+
+INSERT INTO goods(category_id,category,NAME,price,stock,upper_time)
+VALUES
+(1, '女装/女士精品', 'T恤', 39.90, 1000, '2020-11-10 00:00:00'),
+(1, '女装/女士精品', '连衣裙', 79.90, 2500, '2020-11-10 00:00:00'),
+(1, '女装/女士精品', '卫衣', 89.90, 1500, '2020-11-10 00:00:00'),
+(1, '女装/女士精品', '牛仔裤', 89.90, 3500, '2020-11-10 00:00:00'),
+(1, '女装/女士精品', '百褶裙', 29.90, 500, '2020-11-10 00:00:00'),
+(1, '女装/女士精品', '呢绒外套', 399.90, 1200, '2020-11-10 00:00:00'),
+(2, '户外运动', '自行车', 399.90, 1000, '2020-11-10 00:00:00'),
+(2, '户外运动', '山地自行车', 1399.90, 2500, '2020-11-10 00:00:00'),
+(2, '户外运动', '登山杖', 59.90, 1500, '2020-11-10 00:00:00'),
+(2, '户外运动', '骑行装备', 399.90, 3500, '2020-11-10 00:00:00'),
+(2, '户外运动', '运动外套', 799.90, 500, '2020-11-10 00:00:00'),
+(2, '户外运动', '滑板', 499.90, 1200, '2020-11-10 00:00:00');
+
+SELECT * FROM goods;
+
+# 1．ROW_NUMBER()函数
+# ROW_NUMBER()函数能够对数据中的序号进行顺序显示。
+# 举例：查询 goods 数据表中每个商品分类下价格降序排列的各个商品信息。
+SELECT ROW_NUMBER() OVER(PARTITION BY category_id ORDER BY price DESC) AS
+row_num, id, category_id, category, NAME, price, stock FROM goods;
+
+SELECT *
+FROM (
+SELECT ROW_NUMBER() OVER(PARTITION BY category_id ORDER BY price DESC) AS
+row_num,
+id, category_id, category, NAME, price, stock
+ FROM goods) t
+WHERE row_num <= 3;
+
+# 2．RANK()函数
+# 使用RANK()函数能够对序号进行并列排序，并且会跳过重复的序号，比如序号为1、1、3。
+# 举例：使用RANK()函数获取 goods 数据表中各类别的价格从高到低排序的各商品信息
+
+SELECT RANK() OVER(PARTITION BY category_id ORDER BY price DESC) AS row_num,
+ id, category_id, category, NAME, price, stock
+FROM goods;
+
+# 3．DENSE_RANK()函数
+# DENSE_RANK()函数对序号进行并列排序，并且不会跳过重复的序号，比如序号为1、1、2。
+# 举例：使用DENSE_RANK()函数获取 goods 数据表中各类别的价格从高到低排序的各商品信息。
+
+SELECT DENSE_RANK() OVER(PARTITION BY category_id ORDER BY price DESC) AS
+row_num,
+id, category_id, category, NAME, price, stock
+FROM goods;
+
+SELECT *
+ FROM(
+ SELECT DENSE_RANK() OVER(PARTITION BY category_id ORDER BY price DESC) AS
+row_num,
+id, category_id, category, NAME, price, stock
+ FROM goods) t
+ WHERE category_id = 1 AND row_num <= 3;
+
+ # 1．PERCENT_RANK()函数
+# PERCENT_RANK()函数是等级值百分比函数。按照如下方式进行计算。
+ #  (rank - 1) / (rows - 1)
+# 其中，rank的值为使用RANK()函数产生的序号，rows的值为当前窗口的总记录数。
+# 举例：计算 goods 数据表中名称为“女装/女士精品”的类别下的商品的PERCENT_RANK值。
+ #写法一：
+SELECT RANK() OVER (PARTITION BY category_id ORDER BY price DESC) AS r,
+PERCENT_RANK() OVER (PARTITION BY category_id ORDER BY price DESC) AS pr,
+id, category_id, category, NAME, price, stock
+FROM goods
+WHERE category_id = 1;
+
+#写法二：
+SELECT RANK() OVER w AS r,
+PERCENT_RANK() OVER w AS pr,
+id, category_id, category, NAME, price, stock
+ FROM goods
+ WHERE category_id = 1 WINDOW w AS (PARTITION BY category_id ORDER BY price
+DESC);
+
+# 2．CUME_DIST()函数
+# CUME_DIST()函数主要用于查询小于或等于某个值的比例。
+# 举例：查询goods数据表中小于或等于当前价格的比例。
+
+SELECT CUME_DIST() OVER(PARTITION BY category_id ORDER BY price ASC) AS cd,
+ id, category, NAME, price
+FROM goods;
+
+# 1．LAG(expr,n)函数
+# LAG(expr,n)函数返回当前行的前n行的expr的值。
+# 举例：查询goods数据表中前一个商品价格与当前商品价格的差值。
+SELECT id, category, NAME, price, pre_price, price - pre_price AS diff_price
+FROM (
+ SELECT id, category, NAME, price,LAG(price,1) OVER w AS pre_price
+FROM goods
+WINDOW w AS (PARTITION BY category_id ORDER BY price)) t;
+
+# 2．LEAD(expr,n)函数
+# LEAD(expr,n)函数返回当前行的后n行的expr的值。
+# 举例：查询goods数据表中后一个商品价格与当前商品价格的差值。
+SELECT id, category, NAME, behind_price, price,behind_price - price AS
+diff_price
+ FROM(
+ SELECT id, category, NAME, price,LEAD(price, 1) OVER w AS behind_price
+ FROM goods WINDOW w AS (PARTITION BY category_id ORDER BY price)) t;
+
+# 1．FIRST_VALUE(expr)函数
+# FIRST_VALUE(expr)函数返回第一个expr的值。
+# 举例：按照价格排序，查询第1个商品的价格信息。
+ SELECT id, category, NAME, price, stock,FIRST_VALUE(price) OVER w AS
+first_price
+FROM goods WINDOW w AS (PARTITION BY category_id ORDER BY price);
+
+# 2．LAST_VALUE(expr)函数
+# LAST_VALUE(expr)函数返回最后一个expr的值。
+# 举例：按照价格排序，查询最后一个商品的价格信息。
+SELECT id, category, NAME, price, stock, LAST_VALUE(price) OVER w1 AS last_price
+FROM goods WINDOW w1 AS (PARTITION BY category_id ORDER BY price ROWS UNBOUNDED PRECEDING);
+
+SELECT * FROM goods;
+
+# 1．NTH_VALUE(expr,n)函数
+# NTH_VALUE(expr,n)函数返回第n个expr的值。
+# 举例：查询goods数据表中排名第2和第3的价格信息。
+SELECT id, category, NAME, price,NTH_VALUE(price,2) OVER w AS second_price,
+NTH_VALUE(price,3) OVER w AS third_price
+FROM goods WINDOW w AS (PARTITION BY category_id ORDER BY price);
+
+# 2．NTILE(n)函数
+# NTILE(n)函数将分区中的有序数据分为n个桶，记录桶编号。
+# 举例：将goods表中的商品按照价格分为3组。
+SELECT NTILE(3) OVER w AS nt,id, category, NAME, price
+FROM goods WINDOW w AS (PARTITION BY category_id ORDER BY price);
 
 
 
