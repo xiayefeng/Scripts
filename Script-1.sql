@@ -4927,7 +4927,7 @@ END;
 DROP PROCEDURE leave_while;
 
 SET @num = 0;
-CALL leave_while(@num)
+CALL leave_while(@num);
 
 SELECT @num;
 
@@ -5168,6 +5168,88 @@ SELECT employee_id, hire_date, salary FROM employees e
     WHERE department_id = 50 ORDER BY salary;
 
 CALL update_salary(50, 2);
+
+CREATE DATABASE dbtest17
+
+USE dbtest17
+
+SHOW tables;
+
+CREATE TABLE test_trigger(
+id int PRIMARY KEY AUTO_INCREMENT,
+t_note varchar(30)
+)
+
+CREATE TABLE test_trigger_log(
+id int PRIMARY KEY AUTO_INCREMENT,
+t_log varchar(30)
+)
+
+SELECT * FROM test_trigger;
+SELECT * FROM test_trigger_log;
+
+CREATE TRIGGER before_insert_test_tri
+BEFORE INSERT ON test_trigger
+FOR EACH ROW 
+BEGIN
+    INSERT INTO test_trigger_log(t_log)
+    VALUES('before insert...asfad rwerew');
+END;
+
+DROP TRIGGER before_insert_test_tri;
+
+INSERT INTO test_trigger(t_note) VALUES('Tom go to bed');
+
+CREATE TRIGGER after_insert_test_tri
+AFTER INSERT ON test_trigger
+FOR EACH ROW 
+BEGIN 
+     INSERT INTO test_trigger_log(t_log)
+    VALUES('after insert...');
+END;
+
+INSERT INTO test_trigger(t_note) VALUES('Jerry...');
+
+CREATE TABLE employees AS SELECT * FROM atguigudb.employees e;
+
+CREATE TABLE departments AS SELECT * FROM atguigudb.departments d;
+
+DESC employees;
+
+CREATE TRIGGER salary_check_trigger
+BEFORE INSERT ON employees
+FOR EACH ROW 
+BEGIN 
+    DECLARE mar_sal double;
+
+    SELECT salary INTO mar_sal FROM employees WHERE employee_id = NEW.employee_id;
+    IF NEW.salary > mar_sal
+      THEN SIGNAL SQLSTATE 'HY000' SET MESSAGE_TEXT = '薪资高于领导薪资错误';
+     END IF;
+END;
+
+INSERT INTO employees(employee_id, last_name, email, hire_date, job_id, salary, manager_id)
+VALUES(300, 'Tom', 'tom@163.com', CURDATE(), 'IT_PROG', 8000, 103);
+
+INSERT INTO employees(employee_id, last_name, email, hire_date, job_id, salary, manager_id)
+VALUES(300, 'Tom1', 'tom@163.com', CURDATE(), 'IT_PROG', 10000, 103);
+
+SELECT * FROM employees;
+
+SHOW TRIGGERS;
+
+SHOW CREATE TRIGGER salary_check_trigger;
+
+SELECT * FROM information_schema.TRIGGERS;
+
+DROP TRIGGER IF EXISTS after_insert_test_tri;
+
+
+
+
+
+
+
 
 
 
