@@ -5068,7 +5068,7 @@ BEGIN
     RETURN ch;
 END;
 
-CREATE FUNCTION test_if_case2(score DOUBLE)
+CREATE FUNCTION test_if_case2(score float)
 RETURNS CHAR
 BEGIN
   DECLARE ch CHAR;
@@ -5081,7 +5081,9 @@ BEGIN
   RETURN ch;
 END;
 
-SELECT test_if_case(91) AS `result`;
+DROP FUNCTION test_if_case2;
+
+SELECT test_if_case(90) AS `result`;
 SELECT test_if_case2(60) AS `result`;
 
 CREATE PROCEDURE test_if_pro(IN emp_salary DOUBLE)
@@ -5153,12 +5155,13 @@ BEGIN
          THEN SET salary_rate = 1.10;
        ELSE  SET salary_rate = 1.05;
        END IF;
-     UPDATE employees SET salary = salary * salary_rate WHERE employee_id = emp_id;
+       UPDATE employees SET salary = salary * salary_rate WHERE employee_id = emp_id;
      SET int_count = int_count + 1;
    END WHILE;
    CLOSE emp_cursor;
 END;
 
+DROP PROCEDURE update_salary;
 
 SELECT * FROM employees e WHERE e.department_id = 50;
 SELECT employee_id, hire_date, salary FROM employees e
