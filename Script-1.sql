@@ -5448,10 +5448,61 @@ FROM goods WINDOW w AS (PARTITION BY category_id ORDER BY price);
 SELECT NTILE(3) OVER w AS nt,id, category, NAME, price
 FROM goods WINDOW w AS (PARTITION BY category_id ORDER BY price);
 
+CREATE TABLE departments AS SELECT * FROM atguigudb.departments d;
+CREATE TABLE employees AS SELECT * FROM atguigudb.employees e;
 
+SELECT * FROM employees;
+SELECT * FROM departments;
 
+SELECT * FROM departments
+ WHERE department_id IN (
+ SELECT DISTINCT department_id
+ FROM employees
+ );
+ 
+ WITH emp_dept_id
+ AS (SELECT DISTINCT department_id FROM employees)
+ SELECT *
+ FROM departments d JOIN emp_dept_id e
+ ON d.department_id = e.department_id;
+ 
+ 
+ WITH RECURSIVE cte
+AS
+(
+SELECT employee_id,last_name,manager_id,1 AS n FROM employees WHERE employee_id = 100
+-- 种子查询，找到第一代领导
+UNION ALL
+SELECT a.employee_id,a.last_name,a.manager_id,n+1 FROM employees AS a JOIN cte
+ON (a.manager_id = cte.employee_id) -- 递归查询，找出以递归公用表表达式的人为领导的人
+)
+SELECT employee_id,last_name FROM cte WHERE n >= 3;
 
+#1. 创建students数据表，如下
+CREATE TABLE students(
+id INT PRIMARY KEY AUTO_INCREMENT,
+student VARCHAR(15),
+points TINYINT
+);
 
+#2. 向表中添加数据如下
+INSERT INTO students(student,points)
+VALUES
+('张三',89),
+('李四',77),
+('王五',88),
+('赵六',90),
+('孙七',90),
+('周八',88);
+
+SELECT * FROM students;
+
+SELECT student,points,
+RANK() OVER w AS 排序1,
+DENSE_RANK() OVER w AS 排序2,
+ROW_NUMBER() OVER w AS 排序3
+FROM students
+WINDOW w AS (ORDER BY points DESC);
 
 
 
