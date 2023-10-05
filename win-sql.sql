@@ -1,0 +1,1 @@
+SHOW VARIABLES LIKE '%lower_case_table_names%'
