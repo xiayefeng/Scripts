@@ -23,4 +23,9 @@ SHOW TABLE STATUS FROM dbtest1 LIKE '%emp1';
 
 ALTER TABLE emp1 DEFAULT CHARACTER SET 'utf8' COLLATE 'utf8_general_ci';
 
+SHOW VARIABLES LIKE '%lower_case_table_names%';
+
+SELECT * FROM emp1;
+SELECT @@global.sql_mode
+
 

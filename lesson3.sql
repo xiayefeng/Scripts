@@ -1,0 +1,8 @@
+
+USE mysql;
+
+SELECT HOST,USER FROM USER;
+
+FLUSH PRIVILEGES;
+
+DROP USER 'xiaoming';

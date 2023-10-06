@@ -1,0 +1,8 @@
+SHOW VARIABLES LIKE 'datadir';
+SELECT DATABASE();
+
+SHOW TABLES;
+
+SELECT * FROM emp1;
+
+SHOW VARIABLES LIKE 'innodb_file_per_table';
